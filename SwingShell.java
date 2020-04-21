@@ -9,8 +9,43 @@ import java.util.*;
 public class SwingShell extends JFrame
     implements ActionListener, MouseListener {
 
-    // The radius in pixels of the circles drawn in graph_panel
+      public class Edge implements Comparable<Edge>{
+          /** Edge weight and endpoints */
+          private double weight;
+          private Point one;
+          private Point two;
 
+          /** Constructor*/
+          public Edge(double w, Point first, Point second) {
+            weight = w;
+            one = first;
+            two = second;
+          }
+          public double getWeight() {
+            return weight;
+          }
+          public Point getOne() {
+            return one;
+          }
+          public Point getTwo() {
+            return two;
+          }
+          public void setWeight(double w) {
+            weight = w;
+           }
+
+          public int compareTo(Edge other) {
+            if(this.weight > other.weight) {
+              return 1;
+            }
+            else if(this.weight == other.weight) {
+              return 0;
+            }
+            return -1;
+          }
+        }
+
+    // The radius in pixels of the circles drawn in graph_panel
     final int NODE_RADIUS = 3;
 
     // GUI stuff
@@ -26,7 +61,9 @@ public class SwingShell extends JFrame
      */
     LinkedList<Point> vertices = null;
 
-    //TODO: adjacency list of edges
+    //This holds the set of all edges
+    PriorityQueue<Edge> edges = null;
+
     //TODO: state variable (string??)
 
     // Event handling stuff
@@ -152,6 +189,8 @@ public class SwingShell extends JFrame
       //TODO: initialize any new data structures
 
 	vertices = new LinkedList<Point>();
+  edges = new PriorityQueue<Edge>();
+
     }
 
     public void mouseExited(MouseEvent e) {}
@@ -162,6 +201,6 @@ public class SwingShell extends JFrame
 
     public void mousePressed(MouseEvent e) {}
 
-      //TODO: this will be how we get the edge to follow the mouse
+      //TODO: this will be how we get the edge to follow the mouse??
     public void mouseDragged(MouseEvent e) {}
 }

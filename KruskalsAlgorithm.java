@@ -8,19 +8,62 @@ import java.util.*;
 
 public class KruskalsAlgorithm extends JPanel {
 
+  private static class Tree{
+      /** Edge weight and endpoints */
+      private LinkedList<Point> treeVertices;
+      private LinkedList<Edge> treeEdges;
+
+      /** Constructor*/
+      public Edge(LinkedList<Point> vert, LinkedList<Edge> e) {
+        treeVertices = vert;
+        treeEdges = e;
+      }
+
+      public LinkedList<Point> getVertices() {
+        return treeVertices;
+      }
+      public LinkedList<Edge> getEdges() {
+        return treeEdges;
+      }
+
+      public void addVertex(Point p) {
+        return treeVertices.add(p);
+      }
+      public void addEdge(Edge e) {
+        return treeEdges.add(e);
+      }
+
+      public int size() {
+        return treeEdges.size();
+      }
+      public boolean contains(Point p) {
+        return treeVertices.contains(p);
+      }
+  }
+
+    //For the visualization
     SwingShell parent = null;
+
+    //Stores entire list of vertices
     LinkedList vertices = null;
+
+    //Stores edges not in the MST
+    PriorityQueue<Edge> edges = null;
+
+    //Stores the minimum spanning treeEdges
+    Tree mst = null;
+
+    //Color for unhighlighted vertices
     Color normalColor = Color.red;
 
-    // TODO: define adjacency list (double check that it should be adjacency list) of edges
-
-    //Added: highlightColor
+    //Color for highlighted vertices
     Color highlightColor = Color.yellow;
 
     public CanvasPanel(SwingShell _parent) {
 	super();
 	parent = _parent;
 	vertices = parent.vertices;
+  edges = parent.edges;
     }
 
     public void paintComponent(Graphics g) {
