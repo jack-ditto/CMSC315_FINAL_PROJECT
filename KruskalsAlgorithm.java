@@ -8,7 +8,7 @@ import java.util.*;
 
 public class KruskalsAlgorithm extends JPanel {
 
-  private static class Tree{
+  private static class Tree {
       /** Edge weight and endpoints */
       private LinkedList<Point> treeVertices;
       private LinkedList<Edge> treeEdges;
@@ -26,11 +26,21 @@ public class KruskalsAlgorithm extends JPanel {
         return treeEdges;
       }
 
+      //TODO: probably dont need
       public void addVertex(Point p) {
-        return treeVertices.add(p);
+         treeVertices.add(p);
       }
+
       public void addEdge(Edge e) {
-        return treeEdges.add(e);
+        treeEdges.add(e);
+
+        if(!treeVertices.contains(e.getOne())) {
+          treeVertices.add(e.getOne());
+        }
+
+        if(!treeVertices.contains(e.getTwo())) {
+          treeVertices.add(e.getTwo());
+        }
       }
 
       public int size() {
@@ -45,7 +55,7 @@ public class KruskalsAlgorithm extends JPanel {
     SwingShell parent = null;
 
     //Stores entire list of vertices
-    LinkedList vertices = null;
+    LinkedList<Point> vertices = null;
 
     //Stores edges not in the MST
     PriorityQueue<Edge> edges = null;
@@ -58,6 +68,10 @@ public class KruskalsAlgorithm extends JPanel {
 
     //Color for highlighted vertices
     Color highlightColor = Color.yellow;
+
+    int n = 0;
+
+    int m = 0;
 
     public CanvasPanel(SwingShell _parent) {
 	super();
@@ -81,8 +95,53 @@ public class KruskalsAlgorithm extends JPanel {
 		       currentVertex.y - parent.NODE_RADIUS,
 		       2*parent.NODE_RADIUS, 2*parent.NODE_RADIUS);
 	}
+
+  n = vertices.size();
+  m = edges.size();
     }
 
-    //TODO: This is where KruskalsAlgorithm methods will go
+    public Tree Kruskal(LinkedList<Point> points, PriorityQueue<Edge> pqEdges, Tree mst) {
+
+      LinkedList<LinkedList<Point>> clusters = new LinkedList<LinkedList<Point>>();
+
+      //Initialize clusters
+      for(int i = 0; i < n; i++) {
+        clusters.get(i).add(points.get(i));
+      }
+
+      while(mst.size() < n-1) {
+        Edge e = pqEdges.poll();
+        Point p1 = e.getOne();
+        Point p2 = e.getTwo();
+
+        int indexOne = find(clusters, p1);
+        int indexTwo = find(clusters, p2);
+
+        if(indexOne != indexTwo) {
+          mst.addEdge(e);
+          clusters = merge(clusters, indexOne, indexTwo);
+        }
+      }
+
+      return mst;
+    }
+
+    public LinkedList<LinkedList<Point>> union(LinkedList<LinkedList<Point>> c, int one, int two) {
+
+    LinkedList<Point> temp = c.get(two).remove();
+    c.addAll(one, temp);
+    return c;
+
+    }
+
+    public int find(LinkedList<LinkedList<Point>> c, Point p) {
+      for(int i = 0; i < n; i++) {
+        if(clusters.get(i).contains(p)) {
+          return i;
+        }
+      }
+      //TODO: handle error here
+      return -1;
+    }
 
 }
