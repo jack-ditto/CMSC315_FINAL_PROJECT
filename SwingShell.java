@@ -8,26 +8,6 @@ import java.util.*;
 
 public class SwingShell extends JFrame implements ActionListener, MouseListener, MouseMotionListener {
 
-	// The radius in pixels of the circles drawn in graph_panel
-	final int NODE_RADIUS = 10;
-	// References the canvas object where actual drawing will take place
-	CanvasPanel canvas = null;
-
-	JPanel buttonPanel = null;
-
-	JButton addVertexButton, addEdgeButton, deleteButton, clearButton;
-
-	// Data Structures for the Points
-
-	/*
-	 * This holds the set of vertices, all represented as type Point.
-	 */
-	LinkedList<Vertex> vertices = null;
-
-	// This holds the set of all edges
-	// PriorityQueue<Edge> edges = null;
-	LinkedList<Edge> edges = null;
-
 	// Implement a FSA using an enum w/ methods
 	public enum State {
 
@@ -39,6 +19,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 		 * state.
 		 */
 		INITIAL {
+
 			@Override
 			State handleAction(String actionIdentifier) {
 				if (actionIdentifier.equals("addVertex")) {
@@ -63,7 +44,10 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 		 * The user can add vertices to the canvas. Alls only for movement into
 		 * ADD_EDGE_1 state. Otherwise self loop
 		 */
-		ADD_VERTEX {
+		ADD_VERTEX
+
+		{
+
 			@Override
 			State handleAction(String actionIdentifier) {
 				if (actionIdentifier.equals("addEdge")) {
@@ -82,6 +66,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 		 * ADD_EDGE_2 state once the verex is selected.
 		 */
 		ADD_EDGE_1 {
+
 			@Override
 			State handleAction(String actionIdentifier) {
 
@@ -101,6 +86,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 		 * return to INITIAL state after selecting.
 		 */
 		ADD_EDGE_2 {
+
 			@Override
 			State handleAction(String actionIdentifier) {
 				if (actionIdentifier.equals("connectEdge")) {
@@ -116,6 +102,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 		DELETE
 
 		{
+
 			@Override
 			State handleAction(String actionIdentifier) {
 				if (actionIdentifier.equals("mouseClicked")) {
@@ -128,6 +115,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 		},
 		// TODO: change edge weights
 		CHANGE_EDGE_WEIGHT {
+
 			@Override
 			State handleAction(String actionIdentifier) {
 				return this;
@@ -139,6 +127,34 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 
 	}
 
+	// The radius in pixels of the circles drawn in graph_panel
+	final int NODE_RADIUS = 10;
+
+	private String INITIAL_INFO_MSG = "Press a button below to perform an action.";
+	private String ADD_VERTEX_INFO_MSG = "Click the screen to add a vertex.";
+	private String ADD_EDGE_1_INFO_MSG = "Select a vertex 1 for your node.";
+	private String ADD_EDGE_2_INFO_MSG = "Select a vertex 2 for your node.";
+	private String DELETE_INFO_MSG = "Select a vertex to delete it.";
+	private String CHANGE_EDGE_WEIGHT_MSG = "";
+
+	// References the canvas object where actual drawing will take place
+	CanvasPanel canvas = null;
+
+	JPanel buttonPanel = null;
+	JPanel infoPanel = null;
+	JLabel infoText = null;
+
+	JButton addVertexButton, addEdgeButton, deleteButton, clearButton, edgeWeightButton;
+
+	// Data Structures for the Points
+
+	// This holds the set of vertices, all represented as type Point.
+	LinkedList<Vertex> vertices = null;
+
+	// This holds the set of all edges
+	// PriorityQueue<Edge> edges = null;
+	LinkedList<Edge> edges = null;
+
 	// Store the current state
 	private State state;
 
@@ -147,7 +163,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 
 	public SwingShell() {
 		super("Kruskal's Algorithm");
-		setSize(new Dimension(700, 575));
+		setSize(new Dimension(700, 650));
 
 		// Initialize main data structures
 		initializeDataStructures();
@@ -170,7 +186,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 
 		// Create button panel
 		buttonPanel = new JPanel();
-		Dimension panelSize = new Dimension(700, 75);
+		Dimension panelSize = new Dimension(700, 150);
 		buttonPanel.setMinimumSize(panelSize);
 		buttonPanel.setPreferredSize(panelSize);
 		buttonPanel.setMaximumSize(panelSize);
@@ -179,7 +195,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 				buttonPanel.getBorder()));
 
 		// Set button dimensions
-		Dimension buttonSize = new Dimension(150, 50);
+		Dimension buttonSize = new Dimension(120, 50);
 
 		// Add vertex button
 		addVertexButton = new JButton("Add Vertex");
@@ -225,6 +241,18 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 		clearButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.black),
 				clearButton.getBorder()));
 
+		// Change edge weight
+		Dimension edgeWeightButtonSize = new Dimension(160, 50);
+		edgeWeightButton = new JButton("<html><center>" + "Change Edge" + "<br>" + "Weight" + "</center></html>");
+		edgeWeightButton.setMinimumSize(edgeWeightButtonSize);
+		edgeWeightButton.setPreferredSize(edgeWeightButtonSize);
+		edgeWeightButton.setMaximumSize(edgeWeightButtonSize);
+		edgeWeightButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+		edgeWeightButton.setActionCommand("clear");
+		edgeWeightButton.addActionListener(this);
+		edgeWeightButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.black),
+				edgeWeightButton.getBorder()));
+
 		// Add buttons to panel
 		buttonPanel.add(Box.createHorizontalGlue());
 		buttonPanel.add(addVertexButton);
@@ -235,9 +263,26 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 		buttonPanel.add(Box.createHorizontalGlue());
 		buttonPanel.add(clearButton);
 		buttonPanel.add(Box.createHorizontalGlue());
+		buttonPanel.add(edgeWeightButton);
+		buttonPanel.add(Box.createHorizontalGlue());
 
+		// Create button panel
+		infoPanel = new JPanel();
+		Dimension infoPanelSize = new Dimension(700, 50);
+		infoPanel.setMinimumSize(infoPanelSize);
+		infoPanel.setPreferredSize(infoPanelSize);
+		infoPanel.setMaximumSize(infoPanelSize);
+		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.X_AXIS));
+		infoPanel.setBorder(
+				BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.black), infoPanel.getBorder()));
+
+		this.infoText = new JLabel("<html><center>"
+				+ "Welcome to Jack and Rachel's Kruskal Program. </br> Add vertices to the graph to get started"
+				+ "</center></html>", SwingConstants.CENTER);
+		infoPanel.add(this.infoText);
 		// Add everything
 		contentPane.add(canvas);
+		contentPane.add(infoPanel);
 		contentPane.add(buttonPanel);
 
 		// Set state to initial on constuction
@@ -271,6 +316,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 
 		// Allow the state to handle a button press
 		this.state = state.handleAction(actionIdentifier);
+		updateInfoMessage();
 	}
 
 	/**
@@ -280,7 +326,6 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 
 		// If we are in the ADD_VERTEX state, clicking should draw a vertex
 		if (this.state == State.ADD_VERTEX) {
-
 			// Create circle shape
 			Ellipse2D.Double vertexShape = new Ellipse2D.Double(e.getX() - NODE_RADIUS, e.getY() - NODE_RADIUS,
 					2 * NODE_RADIUS, 2 * NODE_RADIUS);
@@ -343,6 +388,28 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 		}
 		// Allow FSM to handle mouse clicked
 		this.state = state.handleAction("mouseClicked");
+		updateInfoMessage();
+	}
+
+	private void updateInfoMessage() {
+		switch (this.state) {
+			case INITIAL:
+				this.infoText.setText("<html><center>" + INITIAL_INFO_MSG + "</center></html>");
+				break;
+			case ADD_VERTEX:
+				this.infoText.setText("<html><center>" + ADD_VERTEX_INFO_MSG + "</center></html>");
+				break;
+			case ADD_EDGE_1:
+				this.infoText.setText("<html><center>" + ADD_EDGE_1_INFO_MSG + "</center></html>");
+				break;
+			case ADD_EDGE_2:
+				this.infoText.setText("<html><center>" + ADD_EDGE_2_INFO_MSG + "</center></html>");
+				break;
+			case DELETE:
+				this.infoText.setText("<html><center>" + DELETE_INFO_MSG + "</center></html>");
+				break;
+
+		}
 	}
 
 	public void initializeDataStructures() {
