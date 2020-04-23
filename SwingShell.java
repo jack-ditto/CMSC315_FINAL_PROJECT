@@ -72,6 +72,13 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 	// Implement a FSA using an enum w/ methods
 	public enum State {
 
+		/**
+		 * INITIAL state
+		 * 
+		 * The user can click any of the buttons to enter a state. Allows for movement
+		 * into ADD_VERTEX state or ADD_EDGE_1 state. Otherwise, self loop into the same
+		 * state.
+		 */
 		INITIAL {
 			@Override
 			State handleAction(String actionIdentifier) {
@@ -87,6 +94,13 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 			}
 
 		},
+
+		/**
+		 * ADD_VERTEX state
+		 * 
+		 * The user can add vertices to the canvas. Alls only for movement into
+		 * ADD_EDGE_1 state. Otherwise self loop
+		 */
 		ADD_VERTEX {
 			@Override
 			State handleAction(String actionIdentifier) {
@@ -99,6 +113,12 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 			}
 
 		},
+		/**
+		 * ADD_EDGE_1 state
+		 * 
+		 * The user can select a node to attach an edge to. Allows for movement into
+		 * ADD_EDGE_2 state once the verex is selected.
+		 */
 		ADD_EDGE_1 {
 			@Override
 			State handleAction(String actionIdentifier) {
@@ -111,6 +131,13 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 			}
 
 		},
+
+		/**
+		 * ADD_EDGE_2 state
+		 * 
+		 * The user can select a second vertex to connect the active edge to. Allows for
+		 * return to INITIAL state after selecting.
+		 */
 		ADD_EDGE_2 {
 			@Override
 			State handleAction(String actionIdentifier) {
@@ -122,6 +149,8 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 			}
 
 		},
+
+		// TODO: Delete nodes or edges
 		DELETE
 
 		{
@@ -131,6 +160,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 			}
 
 		},
+		// TODO: change edge weights
 		CHANGE_EDGE_WEIGHT {
 			@Override
 			State handleAction(String actionIdentifier) {
@@ -260,29 +290,26 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 		project.setVisible(true);
 	}
 
+	/**
+	 * Triggered when a button is pressed
+	 */
 	public void actionPerformed(ActionEvent e) {
 
 		String actionIdentifier = e.getActionCommand();
 
-		// Advance the state depending on the button pressed
+		// Allow the state to handle a button press
 		this.state = state.handleAction(actionIdentifier);
-
-		// if (buttonIdentifier.equals("toggleColor")) {
-		// // toggle the color
-		// canvas.changeColor();
-		// canvas.repaint();
-		// } else if (buttonIdentifier.equals("clearDiagram")) {
-		// vertices.clear();
-		// canvas.repaint();
-		// }
 	}
 
+	/**
+	 * Triggered when the mouse is clicked
+	 */
 	public void mouseClicked(MouseEvent e) {
 
 		// If we are in the ADD_VERTEX state, clicking should draw a vertex
 		if (this.state == State.ADD_VERTEX) {
-			// Add point to canvas
-			Point p = e.getPoint();
+
+			// Create circle and add it to the LinkedList
 			Ellipse2D.Double vertex = new Ellipse2D.Double(e.getX() - NODE_RADIUS, e.getY() - NODE_RADIUS,
 					2 * NODE_RADIUS, 2 * NODE_RADIUS);
 			vertices.add(vertex);
@@ -290,6 +317,8 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 		}
 		// If we are in the ADD_EDGE_1 state, clicking a vertex should connect to it
 		else if (this.state == State.ADD_EDGE_1) {
+
+			// Find the vertex that the mouse is over
 			for (Ellipse2D.Double v : this.vertices) {
 				if (v.contains(e.getPoint())) {
 					// Logic for linking vertex to node
@@ -302,7 +331,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 		// vertices
 		else if (this.state == State.ADD_EDGE_2) {
 
-			// Check if we're over a vertex
+			// Find the vertex that the mouse is over
 			for (Ellipse2D.Double v : this.vertices) {
 				if (v.contains(e.getPoint())) {
 
@@ -310,6 +339,8 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 					Line2D.Double edge = new Line2D.Double();
 					edge.setLine(canvas.vertexOne.getCenterX(), canvas.vertexOne.getCenterY(), v.getCenterX(),
 							v.getCenterY());
+
+					// Add edge
 					this.edges.push(edge);
 
 					canvas.activeLine = false; // Turn off line to cursor
@@ -319,17 +350,18 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 				}
 			}
 		}
-
+		// Allow FSM to handle mouse clicked
 		this.state = state.handleAction("mouseClicked");
-
 	}
 
 	public void initializeDataStructures() {
 
-		// TODO: initialize any new data structures
-
 		vertices = new LinkedList<Ellipse2D.Double>();
 		edges = new LinkedList<Line2D.Double>();
+
+		// NOTE: I took out PQ since I need a LinkedList for edges in order to
+		// draw them.
+
 		// edges = new PriorityQueue<Edge>();
 
 	}
@@ -350,8 +382,15 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 
 	}
 
+	/**
+	 * Triggered when the mouse is moved.
+	 */
 	public void mouseMoved(MouseEvent e) {
+
+		// Allow canvas to know mouse position
 		canvas.mousePos = e.getPoint();
+
+		// Highlighting should happen when in ADD_EDGE_1 or ADD_EDGE_2
 		if (this.state == State.ADD_EDGE_1 || this.state == State.ADD_EDGE_2) {
 
 			// Check if the pointer is currently over a vertex
@@ -362,6 +401,8 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 					overPoint = true;
 				}
 			}
+
+			// Remove highlight if no vertex is being hovered over
 			if (!overPoint) {
 				canvas.highlightVertex = null;
 			}
