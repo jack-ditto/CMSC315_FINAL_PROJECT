@@ -16,11 +16,13 @@ public class CanvasPanel extends JPanel {
 	Color vertexColor = Color.blue;
 	Color edgeColor = Color.green;
 	Color highlightColor = Color.orange;
+	Color deleteColor = Color.red;
 
-	Ellipse2D.Double highlightVertex = null; // Vertex to be highlighted
+	Vertex highlightVertex = null; // Vertex to be highlighted
 	boolean activeLine = false; // Should draw line from vertexOne to pointer
+	boolean deleteState = false;
 	Point mousePos = null; // Mouse position
-	Ellipse2D.Double vertexOne = null; // Origin of activeLine
+	Vertex vertexOne = null; // Origin of activeLine
 
 	public CanvasPanel(SwingShell _parent) {
 		super();
@@ -42,34 +44,40 @@ public class CanvasPanel extends JPanel {
 		g2.setColor(this.edgeColor);
 
 		// Draw edges
-		Line2D.Double currentEdge = null;
+		Edge currentEdge = null;
 
 		for (int i = 0; i < edges.size(); ++i) {
-			currentEdge = (Line2D.Double) iterator2.next();
-			g2.draw(currentEdge);
+			currentEdge = (Edge) iterator2.next();
+			g2.draw(currentEdge.getEdgeShape());
 		}
 
 		if (activeLine) {
-			g2.drawLine((int) vertexOne.getCenterX(), (int) vertexOne.getCenterY(), (int) mousePos.getX(),
-					(int) mousePos.getY());
+			g2.drawLine((int) vertexOne.getVertexShape().getCenterX(), (int) vertexOne.getVertexShape().getCenterY(),
+					(int) mousePos.getX(), (int) mousePos.getY());
 		}
 
 		g2.setColor(this.vertexColor);
 
 		// Draw vertices
-		Ellipse2D.Double currentVertex = null;
+		Vertex currentVertex = null;
 
 		for (int i = 0; i < vertices.size(); ++i) {
-			currentVertex = (Ellipse2D.Double) iterator.next();
+			currentVertex = (Vertex) iterator.next();
 
-			if (currentVertex == this.highlightVertex) {
-				g2.setColor(Color.yellow);
-				g2.draw(currentVertex);
-				g2.fill(currentVertex);
+			if (currentVertex == this.highlightVertex && this.deleteState) {
+				g2.setColor(this.deleteColor);
+				g2.draw(currentVertex.getVertexShape());
+				g2.fill(currentVertex.getVertexShape());
+				g2.setColor(this.vertexColor);
+			} else if (currentVertex == this.highlightVertex) {
+				g2.setColor(this.highlightColor);
+				g2.draw(currentVertex.getVertexShape());
+				g2.fill(currentVertex.getVertexShape());
 				g2.setColor(this.vertexColor);
 			} else {
-				g2.draw(currentVertex);
-				g2.fill(currentVertex);
+				g2.setColor(this.vertexColor);
+				g2.draw(currentVertex.getVertexShape());
+				g2.fill(currentVertex.getVertexShape());
 			}
 
 		}

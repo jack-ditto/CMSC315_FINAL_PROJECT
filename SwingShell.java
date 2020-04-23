@@ -8,48 +8,8 @@ import java.util.*;
 
 public class SwingShell extends JFrame implements ActionListener, MouseListener, MouseMotionListener {
 
-	public class Edge implements Comparable<Edge> {
-		/** Edge weight and endpoints */
-		private double weight;
-		private Point one;
-		private Point two;
-
-		/** Constructor */
-		public Edge(double w, Point first, Point second) {
-			weight = w;
-			one = first;
-			two = second;
-		}
-
-		public double getWeight() {
-			return weight;
-		}
-
-		public Point getOne() {
-			return one;
-		}
-
-		public Point getTwo() {
-			return two;
-		}
-
-		public void setWeight(double w) {
-			weight = w;
-		}
-
-		public int compareTo(Edge other) {
-			if (this.weight > other.weight) {
-				return 1;
-			} else if (this.weight == other.weight) {
-				return 0;
-			}
-			return -1;
-		}
-	}
-
 	// The radius in pixels of the circles drawn in graph_panel
 	final int NODE_RADIUS = 10;
-
 	// References the canvas object where actual drawing will take place
 	CanvasPanel canvas = null;
 
@@ -62,11 +22,11 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 	/*
 	 * This holds the set of vertices, all represented as type Point.
 	 */
-	LinkedList<Ellipse2D.Double> vertices = null;
+	LinkedList<Vertex> vertices = null;
 
 	// This holds the set of all edges
 	// PriorityQueue<Edge> edges = null;
-	LinkedList<Line2D.Double> edges = null;
+	LinkedList<Edge> edges = null;
 
 	// Implement a FSA using an enum w/ methods
 	public enum State {
@@ -87,6 +47,9 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 				} else if (actionIdentifier.equals("addEdge")) {
 					System.out.println("In ADD_EDGE_1 state");
 					return ADD_EDGE_1;
+				} else if (actionIdentifier.equals("delete")) {
+					System.out.println("In DELETE state");
+					return DELETE;
 				}
 
 				return this;
@@ -155,7 +118,11 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 		{
 			@Override
 			State handleAction(String actionIdentifier) {
-				return this;
+				if (actionIdentifier.equals("mouseClicked")) {
+					System.out.println("In INITIAL state");
+					return INITIAL;
+				}
+				return INITIAL;
 			}
 
 		},
@@ -253,7 +220,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 		clearButton.setPreferredSize(buttonSize);
 		clearButton.setMaximumSize(buttonSize);
 		clearButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-		clearButton.setActionCommand("clearDiagram");
+		clearButton.setActionCommand("clear");
 		clearButton.addActionListener(this);
 		clearButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.black),
 				clearButton.getBorder()));
@@ -296,6 +263,12 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 
 		String actionIdentifier = e.getActionCommand();
 
+		if (actionIdentifier.equals("clear")) {
+			this.vertices.clear();
+			this.edges.clear();
+			this.canvas.repaint();
+		}
+
 		// Allow the state to handle a button press
 		this.state = state.handleAction(actionIdentifier);
 	}
@@ -308,9 +281,13 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 		// If we are in the ADD_VERTEX state, clicking should draw a vertex
 		if (this.state == State.ADD_VERTEX) {
 
-			// Create circle and add it to the LinkedList
-			Ellipse2D.Double vertex = new Ellipse2D.Double(e.getX() - NODE_RADIUS, e.getY() - NODE_RADIUS,
+			// Create circle shape
+			Ellipse2D.Double vertexShape = new Ellipse2D.Double(e.getX() - NODE_RADIUS, e.getY() - NODE_RADIUS,
 					2 * NODE_RADIUS, 2 * NODE_RADIUS);
+
+			// Create vertex object
+			Vertex vertex = new Vertex(vertexShape);
+
 			vertices.add(vertex);
 			canvas.repaint();
 		}
@@ -318,8 +295,8 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 		else if (this.state == State.ADD_EDGE_1) {
 
 			// Find the vertex that the mouse is over
-			for (Ellipse2D.Double v : this.vertices) {
-				if (v.contains(e.getPoint())) {
+			for (Vertex v : this.vertices) {
+				if (v.getVertexShape().contains(e.getPoint())) {
 					// Logic for linking vertex to node
 					canvas.vertexOne = v;
 					canvas.activeLine = true;
@@ -331,16 +308,21 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 		else if (this.state == State.ADD_EDGE_2) {
 
 			// Find the vertex that the mouse is over
-			for (Ellipse2D.Double v : this.vertices) {
-				if (v.contains(e.getPoint())) {
+			for (Vertex v : this.vertices) {
+				if (v.getVertexShape().contains(e.getPoint())) {
 
-					// Create edge
-					Line2D.Double edge = new Line2D.Double();
-					edge.setLine(canvas.vertexOne.getCenterX(), canvas.vertexOne.getCenterY(), v.getCenterX(),
-							v.getCenterY());
+					// Create edge shape
+					Line2D.Double edgeShape = new Line2D.Double();
+					edgeShape.setLine(canvas.vertexOne.getVertexShape().getCenterX(),
+							canvas.vertexOne.getVertexShape().getCenterY(), v.getVertexShape().getCenterX(),
+							v.getVertexShape().getCenterY());
 
+					// Create Edge object
+					Edge edge = new Edge(edgeShape, canvas.vertexOne, v);
 					// Add edge
 					this.edges.push(edge);
+					canvas.vertexOne.addEdge(edge);
+					v.addEdge(edge);
 
 					canvas.activeLine = false; // Turn off line to cursor
 					canvas.highlightVertex = null; // Turn off highlighting
@@ -348,6 +330,16 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 					this.state = state.handleAction("connectEdge"); // Tell the FNM that we've connected an edge
 				}
 			}
+		} else if (this.state == State.DELETE) {
+			for (Vertex v : this.vertices) {
+				if (v.getVertexShape().contains(e.getPoint())) {
+					this.edges.removeAll(v.getEdges());
+					this.vertices.remove(v);
+					break;
+				}
+			}
+			canvas.deleteState = false;
+			canvas.repaint();
 		}
 		// Allow FSM to handle mouse clicked
 		this.state = state.handleAction("mouseClicked");
@@ -355,8 +347,8 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 
 	public void initializeDataStructures() {
 
-		vertices = new LinkedList<Ellipse2D.Double>();
-		edges = new LinkedList<Line2D.Double>();
+		vertices = new LinkedList<Vertex>();
+		edges = new LinkedList<Edge>();
 
 		// NOTE: I took out PQ since I need a LinkedList for edges in order to
 		// draw them.
@@ -390,12 +382,12 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 		canvas.mousePos = e.getPoint();
 
 		// Highlighting should happen when in ADD_EDGE_1 or ADD_EDGE_2
-		if (this.state == State.ADD_EDGE_1 || this.state == State.ADD_EDGE_2) {
+		if (this.state == State.ADD_EDGE_1 || this.state == State.ADD_EDGE_2 || this.state == State.DELETE) {
 
 			// Check if the pointer is currently over a vertex
 			boolean overPoint = false;
-			for (Ellipse2D.Double v : this.vertices) {
-				if (v.contains(e.getPoint())) {
+			for (Vertex v : this.vertices) {
+				if (v.getVertexShape().contains(e.getPoint())) {
 					canvas.highlightVertex = v;
 					overPoint = true;
 				}
@@ -405,6 +397,11 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 			if (!overPoint) {
 				canvas.highlightVertex = null;
 			}
+
+			if (this.state == State.DELETE) {
+				canvas.deleteState = true;
+			}
+
 			canvas.repaint();
 		}
 
