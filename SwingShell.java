@@ -55,7 +55,6 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 
 	JPanel buttonPanel = null;
 
-	// TODO: Add correct buttons
 	JButton addVertexButton, addEdgeButton, deleteButton, clearButton;
 
 	// Data Structures for the Points
