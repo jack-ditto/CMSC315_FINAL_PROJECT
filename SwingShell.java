@@ -186,7 +186,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 
 		// Create button panel
 		buttonPanel = new JPanel();
-		Dimension panelSize = new Dimension(700, 150);
+		Dimension panelSize = new Dimension(700, 90);
 		buttonPanel.setMinimumSize(panelSize);
 		buttonPanel.setPreferredSize(panelSize);
 		buttonPanel.setMaximumSize(panelSize);
@@ -281,8 +281,8 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 				+ "</center></html>", SwingConstants.CENTER);
 		infoPanel.add(this.infoText);
 		// Add everything
-		contentPane.add(canvas);
 		contentPane.add(infoPanel);
+		contentPane.add(canvas);
 		contentPane.add(buttonPanel);
 
 		// Set state to initial on constuction
