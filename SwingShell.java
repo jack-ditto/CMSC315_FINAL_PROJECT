@@ -31,6 +31,9 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 				} else if (actionIdentifier.equals("delete")) {
 					System.out.println("In DELETE state");
 					return DELETE;
+				} else if (actionIdentifier.equals("changeEdgeWeight")) {
+					System.out.println("In CHANGE_EDGE_WEIGHT state");
+					return CHANGE_EDGE_WEIGHT;
 				}
 
 				return this;
@@ -118,6 +121,11 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 
 			@Override
 			State handleAction(String actionIdentifier) {
+				if (actionIdentifier.equals("mouseClicked")) {
+					System.out.println("In INITIAL state");
+					return INITIAL;
+				}
+
 				return this;
 			}
 
@@ -135,7 +143,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 	private String ADD_EDGE_1_INFO_MSG = "Select a vertex 1 for your node.";
 	private String ADD_EDGE_2_INFO_MSG = "Select a vertex 2 for your node.";
 	private String DELETE_INFO_MSG = "Select a vertex to delete it.";
-	private String CHANGE_EDGE_WEIGHT_MSG = "";
+	private String CHANGE_EDGE_WEIGHT_MSG = "Select an edge to change its weight.";
 
 	// References the canvas object where actual drawing will take place
 	CanvasPanel canvas = null;
@@ -249,7 +257,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 		edgeWeightButton.setPreferredSize(edgeWeightButtonSize);
 		edgeWeightButton.setMaximumSize(edgeWeightButtonSize);
 		edgeWeightButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-		edgeWeightButton.setActionCommand("clear");
+		edgeWeightButton.setActionCommand("changeEdgeWeight");
 		edgeWeightButton.addActionListener(this);
 		edgeWeightButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.black),
 				edgeWeightButton.getBorder()));
@@ -402,14 +410,46 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 				}
 			}
 		} else if (this.state == State.DELETE) {
+			boolean removedVertex = false;
 			for (Vertex v : this.vertices) {
 				if (v.getVertexShape().contains(e.getPoint())) {
 					this.edges.removeAll(v.getEdges());
 					this.vertices.remove(v);
+					removedVertex = true;
 					break;
 				}
 			}
+
+			if (!removedVertex) {
+				for (Edge edge : this.edges) {
+					int mouseX = e.getX();
+					int mouseY = e.getY();
+					if (this.withinRadius(edge.getEdgeShape(), e.getPoint())) {
+						this.edges.remove(edge);
+						break;
+					}
+				}
+			}
 			canvas.deleteState = false;
+			canvas.repaint();
+		} else if (this.state == State.CHANGE_EDGE_WEIGHT) {
+
+			for (Edge edge : this.edges) {
+				int mouseX = e.getX();
+				int mouseY = e.getY();
+				if (this.withinRadius(edge.getEdgeShape(), e.getPoint())) {
+					String newEdgeWeight = JOptionPane.showInputDialog(this, "Please input a new edge weight.",
+							edge.getWeight());
+
+					// TODO: never trust user input
+					// Also handle case if cancelled
+
+					edge.setWeight(Double.parseDouble(newEdgeWeight));
+
+				}
+			}
+
+			canvas.highlightEdge = null;
 			canvas.repaint();
 		}
 		// Allow FSM to handle mouse clicked
@@ -434,19 +474,24 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 			case DELETE:
 				this.infoText.setText("<html><center>" + DELETE_INFO_MSG + "</center></html>");
 				break;
-
+			case CHANGE_EDGE_WEIGHT:
+				this.infoText.setText("<html><center>" + CHANGE_EDGE_WEIGHT_MSG + "</center></html>");
+				break;
 		}
+	}
+
+	private boolean withinRadius(Line2D.Double line, Point p) {
+		double pointX = p.getX();
+		double pointY = p.getY();
+		int radius = 8;
+		return line.intersects(pointX, pointY, radius, radius);
+
 	}
 
 	public void initializeDataStructures() {
 
 		vertices = new LinkedList<Vertex>();
 		edges = new LinkedList<Edge>();
-
-		// NOTE: I took out PQ since I need a LinkedList for edges in order to
-		// draw them.
-
-		// edges = new PriorityQueue<Edge>();
 
 	}
 
@@ -478,16 +523,33 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 		if (this.state == State.ADD_EDGE_1 || this.state == State.ADD_EDGE_2 || this.state == State.DELETE) {
 
 			// Check if the pointer is currently over a vertex
-			boolean overPoint = false;
+			boolean overVert = false;
+			boolean overEdge = false;
 			for (Vertex v : this.vertices) {
 				if (v.getVertexShape().contains(e.getPoint())) {
 					canvas.highlightVertex = v;
-					overPoint = true;
+					overVert = true;
 				}
 			}
 
-			// Remove highlight if no vertex is being hovered over
-			if (!overPoint) {
+			// If not over a vertex, check if over an edge
+			if (!overVert && this.state == State.DELETE) {
+
+				for (Edge edge : this.edges) {
+					int mouseX = e.getX();
+					int mouseY = e.getY();
+					if (this.withinRadius(edge.getEdgeShape(), e.getPoint())) {
+						canvas.highlightEdge = edge;
+						overEdge = true;
+					}
+				}
+
+			}
+
+			// Remove highlight if no edge is being hovered over
+			if (!overEdge) {
+				canvas.highlightEdge = null;
+			} else if (!overVert) {
 				canvas.highlightVertex = null;
 			}
 
@@ -496,7 +558,27 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 			}
 
 			canvas.repaint();
+		} else if (this.state == State.CHANGE_EDGE_WEIGHT) {
+
+			// Check if the pointer is currently over an edge
+			boolean overPoint = false;
+			for (Edge edge : this.edges) {
+				int mouseX = e.getX();
+				int mouseY = e.getY();
+				if (this.withinRadius(edge.getEdgeShape(), e.getPoint())) {
+					canvas.highlightEdge = edge;
+					overPoint = true;
+				}
+			}
+
+			// Remove highlight if no vertex is being hovered over
+			if (!overPoint) {
+				canvas.highlightEdge = null;
+			}
+
+			canvas.repaint();
 		}
 
 	}
+
 }
