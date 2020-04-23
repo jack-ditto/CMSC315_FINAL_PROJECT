@@ -142,9 +142,10 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 
 	JPanel buttonPanel = null;
 	JPanel infoPanel = null;
+	JPanel runKruskalsPanel = null;
 	JLabel infoText = null;
 
-	JButton addVertexButton, addEdgeButton, deleteButton, clearButton, edgeWeightButton;
+	JButton addVertexButton, addEdgeButton, deleteButton, clearButton, edgeWeightButton, runKruskalsButton;
 
 	// Data Structures for the Points
 
@@ -186,13 +187,13 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 
 		// Create button panel
 		buttonPanel = new JPanel();
-		Dimension panelSize = new Dimension(700, 90);
+		Dimension panelSize = new Dimension(700, 70);
 		buttonPanel.setMinimumSize(panelSize);
 		buttonPanel.setPreferredSize(panelSize);
 		buttonPanel.setMaximumSize(panelSize);
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-		buttonPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.black),
-				buttonPanel.getBorder()));
+		// buttonPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.black),
+		// buttonPanel.getBorder()));
 
 		// Set button dimensions
 		Dimension buttonSize = new Dimension(120, 50);
@@ -280,10 +281,35 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 				+ "Welcome to Jack and Rachel's Kruskal Program. </br> Add vertices to the graph to get started"
 				+ "</center></html>", SwingConstants.CENTER);
 		infoPanel.add(this.infoText);
+
+		// Create panel for run kruskals button
+		Dimension kruskalsButtonPanelSize = new Dimension(700, 60);
+		runKruskalsPanel = new JPanel();
+		runKruskalsPanel.setMinimumSize(kruskalsButtonPanelSize);
+		runKruskalsPanel.setPreferredSize(kruskalsButtonPanelSize);
+		runKruskalsPanel.setMaximumSize(kruskalsButtonPanelSize);
+		runKruskalsPanel.setLayout(new BoxLayout(runKruskalsPanel, BoxLayout.X_AXIS));
+
+		Dimension runKruskalsButtonSize = new Dimension(680, 50);
+		runKruskalsButton = new JButton("Find MST with Kruskal's Algorithm");
+		runKruskalsButton.setMinimumSize(runKruskalsButtonSize);
+		runKruskalsButton.setPreferredSize(runKruskalsButtonSize);
+		runKruskalsButton.setMaximumSize(runKruskalsButtonSize);
+		runKruskalsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+		runKruskalsButton.setActionCommand("runKruskals");
+		runKruskalsButton.addActionListener(this);
+		runKruskalsButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.black),
+				runKruskalsButton.getBorder()));
+
+		runKruskalsPanel.add(Box.createHorizontalGlue());
+		runKruskalsPanel.add(runKruskalsButton);
+		runKruskalsPanel.add(Box.createHorizontalGlue());
+
 		// Add everything
 		contentPane.add(infoPanel);
 		contentPane.add(canvas);
 		contentPane.add(buttonPanel);
+		contentPane.add(runKruskalsPanel);
 
 		// Set state to initial on constuction
 		this.state = State.INITIAL;
