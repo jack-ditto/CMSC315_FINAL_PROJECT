@@ -87,10 +87,16 @@ public class KruskalsAlgorithm extends JPanel {
       }
     }
 
+    for(Vertex v : vertices) {
+      if(!mst.contains(v)) {
+        mst.addVertex(v);
+      }
+    }
+
     return mst;
   }
 
-  /*
+  /**
    * Union - merges two clusters and deletes one of the two
    *
    * Input: The vertex clusters and the indices of the two clusters to be merged
@@ -109,7 +115,7 @@ public class KruskalsAlgorithm extends JPanel {
 
   }
 
-  /*
+  /**
    * Find - finds the index of the cluster of a given vertex
    *
    * Input: The vertex clusters and the vertex to find (or -1 if it is not in any

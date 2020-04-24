@@ -29,9 +29,9 @@ public class Tree {
       return treeEdges;
     }
 
-    /*public void addVertex(Vertex v) {
+    public void addVertex(Vertex v) {
        treeVertices.add(v);
-    }*/
+    }
 
     //Add an edge and incident vertices (if necessary)
     public void addEdge(Edge e) {
