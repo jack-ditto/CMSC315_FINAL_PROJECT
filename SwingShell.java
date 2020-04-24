@@ -2,6 +2,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.event.*;
 import java.awt.geom.*;
 import java.util.*;
 
@@ -100,12 +101,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 
 		},
 
-		/**
-		 * DELETE state
-		 *
-		 * The user can select a node or edge to delete. Allows for return to INITIAL
-		 * state after click.
-		 */
+		// TODO: Delete nodes or edges
 		DELETE
 
 		{
@@ -146,7 +142,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 	private String ADD_VERTEX_INFO_MSG = "Click the screen to add a vertex.";
 	private String ADD_EDGE_1_INFO_MSG = "Select a vertex 1 for your node.";
 	private String ADD_EDGE_2_INFO_MSG = "Select a vertex 2 for your node.";
-	private String DELETE_INFO_MSG = "Select a vertex or an edge to delete it.";
+	private String DELETE_INFO_MSG = "Select a vertex to delete it.";
 	private String CHANGE_EDGE_WEIGHT_MSG = "Select an edge to change its weight.";
 
 	// References the canvas object where actual drawing will take place
@@ -426,6 +422,8 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 
 			if (!removedVertex) {
 				for (Edge edge : this.edges) {
+					int mouseX = e.getX();
+					int mouseY = e.getY();
 					if (this.withinRadius(edge.getEdgeShape(), e.getPoint())) {
 						this.edges.remove(edge);
 						break;
@@ -437,26 +435,16 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 		} else if (this.state == State.CHANGE_EDGE_WEIGHT) {
 
 			for (Edge edge : this.edges) {
+				int mouseX = e.getX();
+				int mouseY = e.getY();
 				if (this.withinRadius(edge.getEdgeShape(), e.getPoint())) {
 					String newEdgeWeight = JOptionPane.showInputDialog(this, "Please input a new edge weight.",
 							edge.getWeight());
 
-					if (newEdgeWeight != null) {
-						if (newEdgeWeight.length() > 7) {
-							JOptionPane.showMessageDialog(this, "Your input was too large to be parsed");
-						} else {
-							double newWeightDouble = edge.getWeight();
-							try {
-								newWeightDouble = Double.parseDouble(newEdgeWeight);
-								edge.setWeight(newWeightDouble);
-							} catch (NumberFormatException err) {
-								JOptionPane.showMessageDialog(this, "The number you entered could not be parsed.");
-							}
-						}
-					}
-
 					// TODO: never trust user input
 					// Also handle case if cancelled
+
+					edge.setWeight(Double.parseDouble(newEdgeWeight));
 
 				}
 			}
@@ -548,6 +536,8 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 			if (!overVert && this.state == State.DELETE) {
 
 				for (Edge edge : this.edges) {
+					int mouseX = e.getX();
+					int mouseY = e.getY();
 					if (this.withinRadius(edge.getEdgeShape(), e.getPoint())) {
 						canvas.highlightEdge = edge;
 						overEdge = true;
@@ -573,6 +563,8 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 			// Check if the pointer is currently over an edge
 			boolean overPoint = false;
 			for (Edge edge : this.edges) {
+				int mouseX = e.getX();
+				int mouseY = e.getY();
 				if (this.withinRadius(edge.getEdgeShape(), e.getPoint())) {
 					canvas.highlightEdge = edge;
 					overPoint = true;
