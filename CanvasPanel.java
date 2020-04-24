@@ -10,6 +10,7 @@ public class CanvasPanel extends JPanel {
 	SwingShell parent = null; // Reference to SwingShell
 	LinkedList vertices = null; // Vertices in SwingShell
 	LinkedList edges = null; // Edges in Swingshell
+	Tree mst = null;
 
 	// Colors
 	Color vertexColor = Color.blue;
@@ -17,6 +18,7 @@ public class CanvasPanel extends JPanel {
 	Color highlightColor = Color.orange;
 	Color deleteColor = Color.red;
 	Color textColor = Color.white;
+	Color mstColor = Color.pink;
 
 	Vertex highlightVertex = null; // Vertex to be highlighted
 	Edge highlightEdge = null; // Edge to be highlighted
@@ -49,7 +51,6 @@ public class CanvasPanel extends JPanel {
 
 		Font font = new Font("Monotype Corsiva", Font.PLAIN, 20);
 		g2.setFont(font);
-		FontRenderContext fontRenderContext = g2.getFontRenderContext();
 
 		for (int i = 0; i < edges.size(); ++i) {
 			currentEdge = (Edge) iterator2.next();
@@ -76,11 +77,16 @@ public class CanvasPanel extends JPanel {
 			// Put the text offset the line depending on the slope
 			g2.setColor(this.textColor);
 			if (slope <= 0) {
-				g2.drawString(String.valueOf(currentEdge.getWeight()), x, y - 15);
+				g2.drawString(String.valueOf(currentEdge.getWeight()), x, y);
 			} else {
-				g2.drawString(String.valueOf(currentEdge.getWeight()), x, y + 10);
+				g2.drawString(String.valueOf(currentEdge.getWeight()), x, y);
 			}
-			g2.setColor(this.edgeColor);
+
+			if (this.mst != null && this.mst.getEdges().contains(currentEdge)) {
+				g2.setColor(this.mstColor);
+				g2.draw(currentEdge.getEdgeShape());
+				g2.fill(currentEdge.getEdgeShape());
+			}
 
 			if (currentEdge == this.highlightEdge && this.deleteState) {
 				g2.setColor(this.deleteColor);
@@ -112,6 +118,12 @@ public class CanvasPanel extends JPanel {
 
 		for (int i = 0; i < vertices.size(); ++i) {
 			currentVertex = (Vertex) iterator.next();
+
+			if (this.mst != null && this.mst.getVertices().contains(currentVertex)) {
+				g2.setColor(this.mstColor);
+				g2.draw(currentEdge.getEdgeShape());
+				g2.fill(currentEdge.getEdgeShape());
+			}
 
 			if (currentVertex == this.highlightVertex && this.deleteState) {
 				g2.setColor(this.deleteColor);

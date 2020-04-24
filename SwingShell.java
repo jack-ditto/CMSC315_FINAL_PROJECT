@@ -350,10 +350,15 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 			this.vertices.clear();
 			this.edges.clear();
 			this.canvas.repaint();
+		} else if (actionIdentifier.equals("runKruskals")) {
+			KruskalsAlgorithm k = new KruskalsAlgorithm(this.vertices, this.edges);
+			Tree mst = k.run();
+			this.canvas.mst = mst;
 		}
 
 		// Allow the state to handle a button press
 		this.state = state.handleAction(actionIdentifier);
+
 		updateInfoMessage();
 	}
 
