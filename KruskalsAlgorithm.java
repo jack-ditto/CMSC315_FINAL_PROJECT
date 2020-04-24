@@ -20,14 +20,14 @@ public class KruskalsAlgorithm extends JPanel {
     PriorityQueue<Edge> pq = null;
 
     public KruskalsAlgorithm(SwingShell _parent) {
-	super();
-	parent = _parent;
-	vertices = parent.vertices;
-  edges = parent.edges;
+	     super();
+	      parent = _parent;
+	       vertices = parent.vertices;
+         edges = parent.edges;
 
-  for(Edge e : edges) {
-    pq.add(e);
-  }
+         for(Edge e : edges) {
+           pq.add(e);
+         }
     }
 
     /**
