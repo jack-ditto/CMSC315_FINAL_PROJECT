@@ -22,7 +22,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 			@Override
 			State handleAction(String actionIdentifier) {
 				if (actionIdentifier.equals("addVertex")) {
-					System.out.println("In ADD_VERTEX state");
+					//System.out.println("In ADD_VERTEX state");
 					return ADD_VERTEX;
 				}
 				return this;
@@ -43,16 +43,16 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 			@Override
 			State handleAction(String actionIdentifier) {
 				if (actionIdentifier.equals("addEdge")) {
-					System.out.println("In ADD_EDGE_1 state");
+					//System.out.println("In ADD_EDGE_1 state");
 					return ADD_EDGE_1;
 				} else if (actionIdentifier.equals("delete")) {
-					System.out.println("In DELETE state");
+					//System.out.println("In DELETE state");
 					return DELETE;
 				} else if (actionIdentifier.equals("changeEdgeWeight")) {
-					System.out.println("In CHANGE_EDGE_WEIGHT state");
+					//System.out.println("In CHANGE_EDGE_WEIGHT state");
 					return CHANGE_EDGE_WEIGHT;
 				} else if (actionIdentifier.equals("clear")) {
-					System.out.println("In DELETE state");
+					//System.out.println("In DELETE state");
 					return INITIAL;
 				}
 				return this;
@@ -71,19 +71,19 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 			State handleAction(String actionIdentifier) {
 
 				if (actionIdentifier.equals("connectEdge")) {
-					System.out.println("In ADD_EDGE_2 state");
+					//System.out.println("In ADD_EDGE_2 state");
 					return ADD_EDGE_2;
 				} else if (actionIdentifier.equals("addVertex")) {
-					System.out.println("In ADD_VERTEX state");
+					//System.out.println("In ADD_VERTEX state");
 					return ADD_VERTEX;
 				} else if (actionIdentifier.equals("delete")) {
-					System.out.println("In DELETE state");
+					//System.out.println("In DELETE state");
 					return DELETE;
 				} else if (actionIdentifier.equals("changeEdgeWeight")) {
-					System.out.println("In CHANGE_EDGE_WEIGHT state");
+					//System.out.println("In CHANGE_EDGE_WEIGHT state");
 					return CHANGE_EDGE_WEIGHT;
 				} else if (actionIdentifier.equals("clear")) {
-					System.out.println("In INITIAL state");
+					//System.out.println("In INITIAL state");
 					return INITIAL;
 				}
 				return this;
@@ -103,19 +103,19 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 			@Override
 			State handleAction(String actionIdentifier) {
 				if (actionIdentifier.equals("connectEdge")) {
-					System.out.println("In ADD_EDGE_1 state");
+					//System.out.println("In ADD_EDGE_1 state");
 					return ADD_EDGE_1;
 				} else if (actionIdentifier.equals("addVertex")) {
-					System.out.println("In ADD_VERTEX state");
+					//System.out.println("In ADD_VERTEX state");
 					return ADD_VERTEX;
 				} else if (actionIdentifier.equals("delete")) {
-					System.out.println("In DELETE state");
+					//System.out.println("In DELETE state");
 					return DELETE;
 				} else if (actionIdentifier.equals("changeEdgeWeight")) {
-					System.out.println("In CHANGE_EDGE_WEIGHT state");
+					//System.out.println("In CHANGE_EDGE_WEIGHT state");
 					return CHANGE_EDGE_WEIGHT;
 				} else if (actionIdentifier.equals("clear")) {
-					System.out.println("In INITIAL state");
+					//System.out.println("In INITIAL state");
 					return INITIAL;
 				}
 				return this;
@@ -124,7 +124,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 
 		/**
 		 * DELETE state
-		 * 
+		 *
 		 * The user can select a node or edge to delete. Allows for return to INITIAL
 		 * state after click.
 		 */
@@ -135,16 +135,16 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 			@Override
 			State handleAction(String actionIdentifier) {
 				if (actionIdentifier.equals("addVertex")) {
-					System.out.println("In ADD_VERTEX state");
+					//System.out.println("In ADD_VERTEX state");
 					return ADD_VERTEX;
 				} else if (actionIdentifier.equals("changeEdgeWeight")) {
-					System.out.println("In CHANGE_EDGE_WEIGHT state");
+					//System.out.println("In CHANGE_EDGE_WEIGHT state");
 					return CHANGE_EDGE_WEIGHT;
 				} else if (actionIdentifier.equals("addEdge")) {
-					System.out.println("In ADD_EDGE_1 state");
+					//System.out.println("In ADD_EDGE_1 state");
 					return ADD_EDGE_1;
 				} else if (actionIdentifier.equals("clear")) {
-					System.out.println("In INITIAL state");
+					//System.out.println("In INITIAL state");
 					return INITIAL;
 				}
 				return this;
@@ -153,7 +153,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 		},
 		/**
 		 * CHANGE_EDGE_WEIGHT state
-		 * 
+		 *
 		 * The user can select a node or edge to delete. Allows for return to INITIAL
 		 * state after click.
 		 */
@@ -162,16 +162,16 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 			@Override
 			State handleAction(String actionIdentifier) {
 				if (actionIdentifier.equals("addVertex")) {
-					System.out.println("In ADD_VERTEX state");
+					//System.out.println("In ADD_VERTEX state");
 					return ADD_VERTEX;
 				} else if (actionIdentifier.equals("delete")) {
-					System.out.println("In DELETE state");
+					//System.out.println("In DELETE state");
 					return DELETE;
 				} else if (actionIdentifier.equals("addEdge")) {
-					System.out.println("In ADD_EDGE_1 state");
+					//System.out.println("In ADD_EDGE_1 state");
 					return ADD_EDGE_1;
 				} else if (actionIdentifier.equals("clear")) {
-					System.out.println("In INITIAL state");
+					//System.out.println("In INITIAL state");
 					return INITIAL;
 				}
 
@@ -400,7 +400,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 			KruskalsAlgorithm k = new KruskalsAlgorithm(this.vertices, this.edges);
 			Tree mst = k.run();
 			this.canvas.mst = mst;
-			System.out.println("Ran Kruskal's! mst is " + mst.getEdges());
+			//System.out.println("Ran Kruskal's! mst is " + mst.getEdges());
 		}
 
 		// Allow the state to handle a button press
