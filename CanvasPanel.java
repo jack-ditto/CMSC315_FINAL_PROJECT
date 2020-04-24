@@ -1,10 +1,9 @@
 
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.font.*;
 import javax.swing.*;
-import javax.swing.event.*;
-import java.awt.geom.*;
 import java.util.*;
+import java.awt.geom.*;
 
 public class CanvasPanel extends JPanel {
 
@@ -17,6 +16,7 @@ public class CanvasPanel extends JPanel {
 	Color edgeColor = Color.green;
 	Color highlightColor = Color.orange;
 	Color deleteColor = Color.red;
+	Color textColor = Color.white;
 
 	Vertex highlightVertex = null; // Vertex to be highlighted
 	Edge highlightEdge = null; // Edge to be highlighted
@@ -47,8 +47,39 @@ public class CanvasPanel extends JPanel {
 		// Draw edges
 		Edge currentEdge = null;
 
+		Font font = new Font("Monotype Corsiva", Font.PLAIN, 20);
+		g2.setFont(font);
+		FontRenderContext fontRenderContext = g2.getFontRenderContext();
+
 		for (int i = 0; i < edges.size(); ++i) {
 			currentEdge = (Edge) iterator2.next();
+
+			double changeInY = (currentEdge.getEdgeShape().getY2() - currentEdge.getEdgeShape().getY1());
+			double changeInX = (currentEdge.getEdgeShape().getX2() - currentEdge.getEdgeShape().getX1());
+
+			double slope = changeInY / changeInX;
+			// double offset = currentEdge.getEdgeShape().getY1() - (slope *
+			// currentEdge.getEdgeShape().getX1());
+
+			System.out.println(slope);
+
+			// Angle text same as line
+			AffineTransform affineTransform = new AffineTransform();
+			affineTransform.rotate(Math.atan(slope));
+			Font rotatedFont = font.deriveFont(affineTransform);
+			g2.setFont(rotatedFont);
+
+			// Get midpoint of line
+			float x = (float) ((currentEdge.getEdgeShape().getX1() + currentEdge.getEdgeShape().getX2()) / 2);
+			float y = (float) ((currentEdge.getEdgeShape().getY1() + currentEdge.getEdgeShape().getY2()) / 2);
+
+			g2.setColor(this.textColor);
+			if (slope <= 0) {
+				g2.drawString(String.valueOf(currentEdge.getWeight()), x, y - 15);
+			} else {
+				g2.drawString(String.valueOf(currentEdge.getWeight()), x, y + 10);
+			}
+			g2.setColor(this.edgeColor);
 
 			if (currentEdge == this.highlightEdge && this.deleteState) {
 				g2.setColor(this.deleteColor);
