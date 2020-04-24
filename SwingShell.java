@@ -83,7 +83,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 					System.out.println("In CHANGE_EDGE_WEIGHT state");
 					return CHANGE_EDGE_WEIGHT;
 				} else if (actionIdentifier.equals("clear")) {
-					System.out.println("In DELETE state");
+					System.out.println("In INITIAL state");
 					return INITIAL;
 				}
 				return this;
@@ -115,7 +115,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 					System.out.println("In CHANGE_EDGE_WEIGHT state");
 					return CHANGE_EDGE_WEIGHT;
 				} else if (actionIdentifier.equals("clear")) {
-					System.out.println("In DELETE state");
+					System.out.println("In INITIAL state");
 					return INITIAL;
 				}
 				return this;
@@ -144,7 +144,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 					System.out.println("In ADD_EDGE_1 state");
 					return ADD_EDGE_1;
 				} else if (actionIdentifier.equals("clear")) {
-					System.out.println("In DELETE state");
+					System.out.println("In INITIAL state");
 					return INITIAL;
 				}
 				return this;
@@ -171,7 +171,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 					System.out.println("In ADD_EDGE_1 state");
 					return ADD_EDGE_1;
 				} else if (actionIdentifier.equals("clear")) {
-					System.out.println("In DELETE state");
+					System.out.println("In INITIAL state");
 					return INITIAL;
 				}
 
@@ -187,7 +187,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 	// The radius in pixels of the circles drawn in graph_panel
 	final int NODE_RADIUS = 10;
 
-	private String INITIAL_INFO_MSG = "Press a button below to perform an action.";
+	private String INITIAL_INFO_MSG = "Add a vertex below to get started.";
 	private String ADD_VERTEX_INFO_MSG = "Click the screen to add a vertex.";
 	private String ADD_EDGE_1_INFO_MSG = "Select a vertex 1 for your node.";
 	private String ADD_EDGE_2_INFO_MSG = "Select a vertex 2 for your node.";
@@ -400,6 +400,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 			KruskalsAlgorithm k = new KruskalsAlgorithm(this.vertices, this.edges);
 			Tree mst = k.run();
 			this.canvas.mst = mst;
+			System.out.println("Ran Kruskal's! mst is " + mst.getEdges());
 		}
 
 		// Allow the state to handle a button press

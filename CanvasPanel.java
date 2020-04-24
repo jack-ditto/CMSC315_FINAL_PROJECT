@@ -83,12 +83,6 @@ public class CanvasPanel extends JPanel {
 				g2.drawString(String.valueOf(currentEdge.getWeight()), x, y);
 			}
 
-			if (this.mst != null && this.mst.getEdges().contains(currentEdge)) {
-				g2.setColor(this.mstColor);
-				g2.draw(currentEdge.getEdgeShape());
-				g2.fill(currentEdge.getEdgeShape());
-			}
-
 			if (currentEdge == this.highlightEdge && this.deleteState) {
 				g2.setColor(this.deleteColor);
 				g2.draw(currentEdge.getEdgeShape());
@@ -100,9 +94,16 @@ public class CanvasPanel extends JPanel {
 				g2.fill(currentEdge.getEdgeShape());
 				g2.setColor(this.edgeColor);
 			} else {
-				g2.setColor(this.edgeColor);
-				g2.draw(currentEdge.getEdgeShape());
-				g2.fill(currentEdge.getEdgeShape());
+				if (this.mst != null && this.mst.getEdges().contains(currentEdge)) {
+					g2.setColor(this.mstColor);
+					g2.draw(currentEdge.getEdgeShape());
+					g2.fill(currentEdge.getEdgeShape());
+				} else {
+					g2.setColor(this.edgeColor);
+					g2.draw(currentEdge.getEdgeShape());
+					g2.fill(currentEdge.getEdgeShape());
+				}
+
 			}
 
 		}
@@ -121,12 +122,6 @@ public class CanvasPanel extends JPanel {
 		for (int i = 0; i < vertices.size(); ++i) {
 			currentVertex = (Vertex) iterator.next();
 
-			if (this.mst != null && this.mst.getVertices().contains(currentVertex)) {
-				g2.setColor(this.mstColor);
-				g2.draw(currentVertex.getVertexShape());
-				g2.fill(currentVertex.getVertexShape());
-			}
-
 			if (this.highlightVertices.contains(currentVertex) && this.deleteState) {
 				g2.setColor(this.deleteColor);
 				g2.draw(currentVertex.getVertexShape());
@@ -138,9 +133,17 @@ public class CanvasPanel extends JPanel {
 				g2.fill(currentVertex.getVertexShape());
 				g2.setColor(this.vertexColor);
 			} else {
-				g2.setColor(this.vertexColor);
-				g2.draw(currentVertex.getVertexShape());
-				g2.fill(currentVertex.getVertexShape());
+
+				if (this.mst != null && this.mst.getVertices().contains(currentVertex)) {
+					g2.setColor(this.mstColor);
+					g2.draw(currentVertex.getVertexShape());
+					g2.fill(currentVertex.getVertexShape());
+				} else {
+					g2.setColor(this.vertexColor);
+					g2.draw(currentVertex.getVertexShape());
+					g2.fill(currentVertex.getVertexShape());
+				}
+
 			}
 
 		}
