@@ -16,6 +16,11 @@ public class Tree {
       treeEdges = e;
     }
 
+    public Tree() {
+      treeVertices = new LinkedList<Vertex>();
+      treeEdges = new LinkedList<Edge>();
+    }
+
     //Getters
     public LinkedList<Vertex> getVertices() {
       return treeVertices;
