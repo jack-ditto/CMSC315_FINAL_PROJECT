@@ -35,18 +35,13 @@ public class KruskalsAlgorithm extends JPanel {
     edges = e;
 
     pq = new PriorityQueue<Edge>();
-
     for (Edge ed : edges) {
       pq.add(ed);
     }
 
-    // Stores the minimum spanning treeEdges
-    mst = new Tree();
-
-    // Stores the temporary clusters
-    clusters = new LinkedList<LinkedList<Vertex>>();
-
     n = vertices.size();
+    mst = new Tree();
+    clusters = new LinkedList<LinkedList<Vertex>>();
 
     // Initialize clusters
     for (int i = 0; i < n; i++) {
@@ -92,10 +87,6 @@ public class KruskalsAlgorithm extends JPanel {
       }
     }
 
-
-    for(Edge edg : mst.getEdges()){
-      System.out.println(edg.getWeight());
-    }
     return mst;
   }
 
@@ -122,7 +113,8 @@ public class KruskalsAlgorithm extends JPanel {
    * Find - finds the index of the cluster of a given vertex
    *
    * Input: The vertex clusters and the vertex to find (or -1 if it is not in any
-   * cluster) Output: The index of the vertex cluster
+   * cluster)
+   * Output: The index of the vertex cluster
    */
   public int find(Vertex v) {
     for (int i = 0; i < clusters.size(); i++) {
