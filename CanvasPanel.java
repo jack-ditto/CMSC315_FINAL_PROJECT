@@ -16,9 +16,9 @@ public class CanvasPanel extends JPanel {
 	Color vertexColor = Color.blue;
 	Color edgeColor = Color.green;
 	Color highlightColor = Color.orange;
-	Color deleteColor = Color.red;
+	Color deleteColor = highlightColor;// Color.red;
 	Color textColor = Color.white;
-	Color mstColor = Color.pink;
+	Color mstColor = highlightColor;// Color.pink;
 
 	LinkedList<Vertex> highlightVertices = null;
 	Edge highlightEdge = null; // Edge to be highlighted
