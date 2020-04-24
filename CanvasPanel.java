@@ -7,7 +7,7 @@ import java.awt.geom.*;
 
 public class CanvasPanel extends JPanel {
 
-	SwingShell parent = null; // Reference to SwingShell
+	KruskalsAlgorithm parent = null; // Reference to SwingShell
 	LinkedList vertices = null; // Vertices in SwingShell
 	LinkedList edges = null; // Edges in Swingshell
 	Tree mst = null;
@@ -27,7 +27,7 @@ public class CanvasPanel extends JPanel {
 	Point mousePos = null; // Mouse position
 	Vertex vertexOne = null; // Origin of activeLine
 
-	public CanvasPanel(SwingShell _parent) {
+	public CanvasPanel(KruskalsAlgorithm _parent) {
 		super();
 		parent = _parent;
 		vertices = parent.vertices;
