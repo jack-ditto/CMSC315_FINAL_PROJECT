@@ -54,16 +54,16 @@ public class CanvasPanel extends JPanel {
 		for (int i = 0; i < edges.size(); ++i) {
 			currentEdge = (Edge) iterator2.next();
 
+			// Get change in Y and X for line
 			double changeInY = (currentEdge.getEdgeShape().getY2() - currentEdge.getEdgeShape().getY1());
 			double changeInX = (currentEdge.getEdgeShape().getX2() - currentEdge.getEdgeShape().getX1());
 
+			// Calculate slope
 			double slope = changeInY / changeInX;
-			// double offset = currentEdge.getEdgeShape().getY1() - (slope *
-			// currentEdge.getEdgeShape().getX1());
 
-			System.out.println(slope);
-
-			// Angle text same as line
+			// This is for angling the text. The value passed to affineTransform.rotate is
+			// the
+			// angle to rotate the text at.
 			AffineTransform affineTransform = new AffineTransform();
 			affineTransform.rotate(Math.atan(slope));
 			Font rotatedFont = font.deriveFont(affineTransform);
@@ -73,6 +73,7 @@ public class CanvasPanel extends JPanel {
 			float x = (float) ((currentEdge.getEdgeShape().getX1() + currentEdge.getEdgeShape().getX2()) / 2);
 			float y = (float) ((currentEdge.getEdgeShape().getY1() + currentEdge.getEdgeShape().getY2()) / 2);
 
+			// Put the text offset the line depending on the slope
 			g2.setColor(this.textColor);
 			if (slope <= 0) {
 				g2.drawString(String.valueOf(currentEdge.getWeight()), x, y - 15);
