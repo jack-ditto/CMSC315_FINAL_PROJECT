@@ -5,6 +5,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 import java.awt.geom.*;
 import java.util.*;
+import java.lang.*;
 
 public class KruskalsAlgorithm extends JPanel {
 
@@ -64,8 +65,8 @@ public class KruskalsAlgorithm extends JPanel {
         int indexTwo = find(clusters, v2);
 
         if (indexOne == -1 || indexTwo == -1) {
-          System.out.println("Vertex not found in clusters ??? (Error)")
-          throw new ArrayOutOfBoundsException("Vertex not found in clusters");
+          System.out.println("Vertex not found in clusters ??? (Error)");
+          throw new ArrayIndexOutOfBoundsException("Vertex not found in clusters");
         }
 
         //Add it to the MST if they are not already in the same cluster
@@ -97,7 +98,7 @@ public class KruskalsAlgorithm extends JPanel {
     * Output: The index of the vertex cluster
     */
     public int find(LinkedList<LinkedList<Vertex>> c, Vertex v) {
-      for(int i = 0; i < n; i++) {
+      for(int i = 0; i < c.size(); i++) {
         if(c.get(i).contains(v)) {
           return i;
         }
