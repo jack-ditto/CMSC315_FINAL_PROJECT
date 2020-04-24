@@ -468,7 +468,6 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 
 				// Create Edge object
 				Edge edge = new Edge(edgeShape, canvas.vertexOne, recentVertex);
-				// TODO: prompt for initial edge weight
 				String newEdgeWeight = JOptionPane.showInputDialog(this, "Please input an edge weight.",
 						edge.getWeight());
 
