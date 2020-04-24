@@ -19,7 +19,6 @@ public class CanvasPanel extends JPanel {
 	Color deleteColor = Color.red;
 
 	Vertex highlightVertex = null; // Vertex to be highlighted
-	Edge highlightEdge = null; // Edge to be highlighted
 	boolean activeLine = false; // Should draw line from vertexOne to pointer
 	boolean deleteState = false;
 	Point mousePos = null; // Mouse position
@@ -49,23 +48,7 @@ public class CanvasPanel extends JPanel {
 
 		for (int i = 0; i < edges.size(); ++i) {
 			currentEdge = (Edge) iterator2.next();
-
-			if (currentEdge == this.highlightEdge && this.deleteState) {
-				g2.setColor(this.deleteColor);
-				g2.draw(currentEdge.getEdgeShape());
-				g2.fill(currentEdge.getEdgeShape());
-				g2.setColor(this.edgeColor);
-			} else if (currentEdge == this.highlightEdge) {
-				g2.setColor(this.highlightColor);
-				g2.draw(currentEdge.getEdgeShape());
-				g2.fill(currentEdge.getEdgeShape());
-				g2.setColor(this.edgeColor);
-			} else {
-				g2.setColor(this.edgeColor);
-				g2.draw(currentEdge.getEdgeShape());
-				g2.fill(currentEdge.getEdgeShape());
-			}
-
+			g2.draw(currentEdge.getEdgeShape());
 		}
 
 		if (activeLine) {
