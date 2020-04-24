@@ -20,14 +20,14 @@ public class KruskalsAlgorithm extends JPanel {
     PriorityQueue<Edge> pq = null;
 
     public KruskalsAlgorithm(SwingShell _parent) {
-	     super();
-	      parent = _parent;
-	       vertices = parent.vertices;
-         edges = parent.edges;
+	super();
+	parent = _parent;
+	vertices = parent.vertices;
+  edges = parent.edges;
 
-         for(Edge e : edges) {
-           pq.add(e);
-         }
+  for(Edge e : edges) {
+    pq.add(e);
+  }
     }
 
     /**
@@ -98,7 +98,7 @@ public class KruskalsAlgorithm extends JPanel {
     */
     public int find(LinkedList<LinkedList<Vertex>> c, Vertex v) {
       for(int i = 0; i < n; i++) {
-        if(clusters.get(i).contains(v)) {
+        if(c.get(i).contains(v)) {
           return i;
         }
       }
