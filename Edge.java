@@ -22,17 +22,13 @@ public class Edge implements Comparable<Edge> {
     }
 
     // Get the center of vertex one
-    public Point getOne() {
-        int x = (int) this.vertexOne.getVertexShape().getCenterX();
-        int y = (int) this.vertexOne.getVertexShape().getCenterY();
-        return new Point(x, y);
+    public Vertex getVertexOne() {
+        return this.vertexOne;
     }
 
     // Get the center of vertex two
-    public Point getTwo() {
-        int x = (int) this.vertexTwo.getVertexShape().getCenterX();
-        int y = (int) this.vertexTwo.getVertexShape().getCenterY();
-        return new Point(x, y);
+    public Vertex getVertexTwo() {
+        return this.vertexTwo;
     }
 
     public Line2D.Double getEdgeShape() {

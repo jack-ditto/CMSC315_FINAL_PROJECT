@@ -8,57 +8,17 @@ import java.util.*;
 
 public class KruskalsAlgorithm extends JPanel {
 
-  private static class Tree {
-      /** Edge weight and endpoints */
-      private LinkedList<Point> treeVertices;
-      private LinkedList<Edge> treeEdges;
-
-      /** Constructor*/
-      public Edge(LinkedList<Point> vert, LinkedList<Edge> e) {
-        treeVertices = vert;
-        treeEdges = e;
-      }
-
-      public LinkedList<Point> getVertices() {
-        return treeVertices;
-      }
-      public LinkedList<Edge> getEdges() {
-        return treeEdges;
-      }
-
-      //TODO: probably dont need
-      public void addVertex(Point p) {
-         treeVertices.add(p);
-      }
-
-      public void addEdge(Edge e) {
-        treeEdges.add(e);
-
-        if(!treeVertices.contains(e.getOne())) {
-          treeVertices.add(e.getOne());
-        }
-
-        if(!treeVertices.contains(e.getTwo())) {
-          treeVertices.add(e.getTwo());
-        }
-      }
-
-      public int size() {
-        return treeEdges.size();
-      }
-      public boolean contains(Point p) {
-        return treeVertices.contains(p);
-      }
-  }
-
     //For the visualization
     SwingShell parent = null;
 
     //Stores entire list of vertices
-    LinkedList<Point> vertices = null;
+    LinkedList<Vertex> vertices = null;
+
+    //Stores all edges of the graph
+    LinkedList<Edge> edges = null;
 
     //Stores edges not in the MST
-    PriorityQueue<Edge> edges = null;
+    PriorityQueue<Edge> pq = null;
 
     //Stores the minimum spanning treeEdges
     Tree mst = null;
@@ -78,12 +38,17 @@ public class KruskalsAlgorithm extends JPanel {
 	parent = _parent;
 	vertices = parent.vertices;
   edges = parent.edges;
+
+  for(Edge e : edges) {
+    pq.add(e);
+  }
     }
 
+    //TODO: edit to work with vertex structure
     public void paintComponent(Graphics g) {
 	super.paintComponent(g);
 
-	g.setColor(currentColor);
+	g.setColor(normalColor);
 
 	ListIterator iterator = vertices.listIterator(0);
 
@@ -100,9 +65,14 @@ public class KruskalsAlgorithm extends JPanel {
   m = edges.size();
     }
 
-    public Tree Kruskal(LinkedList<Point> points, PriorityQueue<Edge> pqEdges, Tree mst) {
+    /**
+    * Kruskal's Algorithm
+    *
+    * Input: 
+    */
+    public Tree Kruskal(LinkedList<Vertex> points, PriorityQueue<Edge> pqEdges, Tree mst) {
 
-      LinkedList<LinkedList<Point>> clusters = new LinkedList<LinkedList<Point>>();
+      LinkedList<LinkedList<Vertex>> clusters = new LinkedList<LinkedList<Vertex>>();
 
       //Initialize clusters
       for(int i = 0; i < n; i++) {
@@ -110,33 +80,36 @@ public class KruskalsAlgorithm extends JPanel {
       }
 
       while(mst.size() < n-1) {
+
+        //Take the minimum edge
         Edge e = pqEdges.poll();
-        Point p1 = e.getOne();
-        Point p2 = e.getTwo();
+        Vertex v1 = e.getVertexOne();
+        Vertex v2 = e.getVertexTwo();
 
-        int indexOne = find(clusters, p1);
-        int indexTwo = find(clusters, p2);
+        //Find their clusters
+        int indexOne = find(clusters, v1);
+        int indexTwo = find(clusters, v2);
 
+        //Add it to the MST if they are not already in the same cluster
         if(indexOne != indexTwo) {
           mst.addEdge(e);
-          clusters = merge(clusters, indexOne, indexTwo);
-        }
+          clusters = union(clusters, indexOne, indexTwo);        }
       }
 
       return mst;
     }
 
-    public LinkedList<LinkedList<Point>> union(LinkedList<LinkedList<Point>> c, int one, int two) {
+    public LinkedList<LinkedList<Vertex>> union(LinkedList<LinkedList<Vertex>> c, int one, int two) {
 
-    LinkedList<Point> temp = c.get(two).remove();
-    c.addAll(one, temp);
+    LinkedList<Vertex> temp = c.remove(two);
+    c.get(one).addAll(temp);
     return c;
 
     }
 
-    public int find(LinkedList<LinkedList<Point>> c, Point p) {
+    public int find(LinkedList<LinkedList<Vertex>> c, Vertex v) {
       for(int i = 0; i < n; i++) {
-        if(clusters.get(i).contains(p)) {
+        if(clusters.get(i).contains(v)) {
           return i;
         }
       }
