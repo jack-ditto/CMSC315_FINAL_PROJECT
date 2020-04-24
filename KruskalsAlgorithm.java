@@ -44,27 +44,6 @@ public class KruskalsAlgorithm extends JPanel {
   }
     }
 
-    //TODO: edit to work with vertex structure
-    public void paintComponent(Graphics g) {
-	super.paintComponent(g);
-
-	g.setColor(normalColor);
-
-	ListIterator iterator = vertices.listIterator(0);
-
-	Point currentVertex = null;
-
-	for (int i=0; i < vertices.size(); ++i) {
-	    currentVertex = (Point) iterator.next();
-	    g.fillOval(currentVertex.x - parent.NODE_RADIUS,
-		       currentVertex.y - parent.NODE_RADIUS,
-		       2*parent.NODE_RADIUS, 2*parent.NODE_RADIUS);
-	}
-
-  n = vertices.size();
-  m = edges.size();
-    }
-
     /**
     * Kruskal's Algorithm
     *
@@ -109,7 +88,7 @@ public class KruskalsAlgorithm extends JPanel {
 
     public int find(LinkedList<LinkedList<Vertex>> c, Vertex v) {
       for(int i = 0; i < n; i++) {
-        if(clusters.get(i).contains(v)) {
+        if(c.get(i).contains(v)) {
           return i;
         }
       }
