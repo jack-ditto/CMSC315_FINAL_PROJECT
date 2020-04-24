@@ -8,77 +8,50 @@ import java.util.*;
 
 public class KruskalsAlgorithm extends JPanel {
 
-    //For the visualization
     SwingShell parent = null;
 
-    //Stores entire list of vertices
+    //List of vertices
     LinkedList<Vertex> vertices = null;
 
-    //Stores all edges of the graph
+    //All edges of the graph
     LinkedList<Edge> edges = null;
 
     //Stores edges not in the MST
     PriorityQueue<Edge> pq = null;
 
-    //Stores the minimum spanning treeEdges
-    Tree mst = null;
-
-    //Color for unhighlighted vertices
-    Color normalColor = Color.red;
-
-    //Color for highlighted vertices
-    Color highlightColor = Color.yellow;
-
-    int n = 0;
-
-    int m = 0;
-
     public KruskalsAlgorithm(SwingShell _parent) {
-	super();
-	parent = _parent;
-	vertices = parent.vertices;
-  edges = parent.edges;
+	     super();
+	      parent = _parent;
+	       vertices = parent.vertices;
+         edges = parent.edges;
 
-  for(Edge e : edges) {
-    pq.add(e);
-  }
-    }
-
-    //TODO: edit to work with vertex structure
-    public void paintComponent(Graphics g) {
-	super.paintComponent(g);
-
-	g.setColor(normalColor);
-
-	ListIterator iterator = vertices.listIterator(0);
-
-	Point currentVertex = null;
-
-	for (int i=0; i < vertices.size(); ++i) {
-	    currentVertex = (Point) iterator.next();
-	    g.fillOval(currentVertex.x - parent.NODE_RADIUS,
-		       currentVertex.y - parent.NODE_RADIUS,
-		       2*parent.NODE_RADIUS, 2*parent.NODE_RADIUS);
-	}
-
-  n = vertices.size();
-  m = edges.size();
+         for(Edge e : edges) {
+           pq.add(e);
+         }
     }
 
     /**
-    * Kruskal's Algorithm
+    * Kruskal's Algorithm - computes the minimum spanning tree of a graph
     *
-    * Input:
+    * Input: A set of vertices, a set of edges
+    * Output: A minimum spannining tree
     */
-    public Tree Kruskal(LinkedList<Vertex> points, PriorityQueue<Edge> pqEdges, Tree mst) {
+    public Tree Kruskal(LinkedList<Vertex> points, PriorityQueue<Edge> pqEdges) {
 
+      //Stores the minimum spanning treeEdges
+      Tree mst = null;
+
+      //Stores the temporary clusters
       LinkedList<LinkedList<Vertex>> clusters = new LinkedList<LinkedList<Vertex>>();
+
+      int n = points.size();
 
       //Initialize clusters
       for(int i = 0; i < n; i++) {
         clusters.get(i).add(points.get(i));
       }
 
+      //Add appropriate edges to the MouseMotionListener
       while(mst.size() < n-1) {
 
         //Take the minimum edge
@@ -90,15 +63,26 @@ public class KruskalsAlgorithm extends JPanel {
         int indexOne = find(clusters, v1);
         int indexTwo = find(clusters, v2);
 
+        if (indexOne == -1 || indexTwo == -1) {
+          System.out.println("Vertex not found in clusters ??? (Error)")
+          throw new ArrayOutOfBoundsException("Vertex not found in clusters");
+        }
+
         //Add it to the MST if they are not already in the same cluster
         if(indexOne != indexTwo) {
           mst.addEdge(e);
-          clusters = union(clusters, indexOne, indexTwo);        }
+          clusters = union(clusters, indexOne, indexTwo);
+        }
       }
 
       return mst;
     }
 
+    /* Union - merges two clusters and deletes one of the two
+    *
+    * Input: The vertex clusters and the indices of the two clusters to be merged
+    * Output: The vertex clusters after merging
+    */
     public LinkedList<LinkedList<Vertex>> union(LinkedList<LinkedList<Vertex>> c, int one, int two) {
 
     LinkedList<Vertex> temp = c.remove(two);
@@ -107,13 +91,18 @@ public class KruskalsAlgorithm extends JPanel {
 
     }
 
+    /* Find - finds the index of the cluster of a given vertex
+    *
+    * Input: The vertex clusters and the vertex to find (or -1 if it is not in any cluster)
+    * Output: The index of the vertex cluster
+    */
     public int find(LinkedList<LinkedList<Vertex>> c, Vertex v) {
       for(int i = 0; i < n; i++) {
         if(clusters.get(i).contains(v)) {
           return i;
         }
       }
-      //TODO: handle error here
+      //Should never happen -- error
       return -1;
     }
 
