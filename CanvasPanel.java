@@ -123,8 +123,8 @@ public class CanvasPanel extends JPanel {
 
 			if (this.mst != null && this.mst.getVertices().contains(currentVertex)) {
 				g2.setColor(this.mstColor);
-				g2.draw(currentEdge.getEdgeShape());
-				g2.fill(currentEdge.getEdgeShape());
+				g2.draw(currentVertex.getVertexShape());
+				g2.fill(currentVertex.getVertexShape());
 			}
 
 			if (this.highlightVertices.contains(currentVertex) && this.deleteState) {

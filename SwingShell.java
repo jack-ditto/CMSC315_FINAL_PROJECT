@@ -51,6 +51,9 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 				} else if (actionIdentifier.equals("changeEdgeWeight")) {
 					System.out.println("In CHANGE_EDGE_WEIGHT state");
 					return CHANGE_EDGE_WEIGHT;
+				} else if (actionIdentifier.equals("clear")) {
+					System.out.println("In DELETE state");
+					return INITIAL;
 				}
 				return this;
 			}
@@ -79,6 +82,9 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 				} else if (actionIdentifier.equals("changeEdgeWeight")) {
 					System.out.println("In CHANGE_EDGE_WEIGHT state");
 					return CHANGE_EDGE_WEIGHT;
+				} else if (actionIdentifier.equals("clear")) {
+					System.out.println("In DELETE state");
+					return INITIAL;
 				}
 				return this;
 			}
@@ -108,6 +114,9 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 				} else if (actionIdentifier.equals("changeEdgeWeight")) {
 					System.out.println("In CHANGE_EDGE_WEIGHT state");
 					return CHANGE_EDGE_WEIGHT;
+				} else if (actionIdentifier.equals("clear")) {
+					System.out.println("In DELETE state");
+					return INITIAL;
 				}
 				return this;
 			}
@@ -134,6 +143,9 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 				} else if (actionIdentifier.equals("addEdge")) {
 					System.out.println("In ADD_EDGE_1 state");
 					return ADD_EDGE_1;
+				} else if (actionIdentifier.equals("clear")) {
+					System.out.println("In DELETE state");
+					return INITIAL;
 				}
 				return this;
 			}
@@ -149,8 +161,17 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 
 			@Override
 			State handleAction(String actionIdentifier) {
-				if (actionIdentifier.equals("mouseClicked")) {
-					System.out.println("In INITIAL state");
+				if (actionIdentifier.equals("addVertex")) {
+					System.out.println("In ADD_VERTEX state");
+					return ADD_VERTEX;
+				} else if (actionIdentifier.equals("delete")) {
+					System.out.println("In DELETE state");
+					return DELETE;
+				} else if (actionIdentifier.equals("addEdge")) {
+					System.out.println("In ADD_EDGE_1 state");
+					return ADD_EDGE_1;
+				} else if (actionIdentifier.equals("clear")) {
+					System.out.println("In DELETE state");
 					return INITIAL;
 				}
 
@@ -376,7 +397,6 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 			this.canvas.repaint();
 			this.canvas.activeLine = false;
 		} else if (actionIdentifier.equals("runKruskals")) {
-			System.out.println(this.vertices.size());
 			KruskalsAlgorithm k = new KruskalsAlgorithm(this.vertices, this.edges);
 			Tree mst = k.run();
 			this.canvas.mst = mst;
@@ -431,40 +451,64 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 		// vertices
 		else if (this.state == State.ADD_EDGE_2) {
 
+			Vertex recentVertex = null;
 			// Find the vertex that the mouse is over
 			for (Vertex v : this.vertices) {
 				if (v.getVertexShape().contains(e.getPoint())) {
-
-					// Create edge shape
-					Line2D.Double edgeShape = new Line2D.Double();
-					edgeShape.setLine(canvas.vertexOne.getVertexShape().getCenterX(),
-							canvas.vertexOne.getVertexShape().getCenterY(), v.getVertexShape().getCenterX(),
-							v.getVertexShape().getCenterY());
-
-					// Create Edge object
-					Edge edge = new Edge(edgeShape, canvas.vertexOne, v);
-					// TODO: prompt for initial edge weight
-					// Add edge
-					this.edges.push(edge);
-					canvas.vertexOne.addEdge(edge);
-					v.addEdge(edge);
-
-					canvas.activeLine = false; // Turn off line to cursor
-					canvas.highlightVertices.clear();
-					canvas.repaint();
-					this.state = state.handleAction("connectEdge"); // Tell the FNM that we've connected an edge
+					recentVertex = v;
 				}
+			}
+			if (recentVertex != null) {
+				// Create edge shape
+				Line2D.Double edgeShape = new Line2D.Double();
+				edgeShape.setLine(canvas.vertexOne.getVertexShape().getCenterX(),
+						canvas.vertexOne.getVertexShape().getCenterY(), recentVertex.getVertexShape().getCenterX(),
+						recentVertex.getVertexShape().getCenterY());
+
+				// Create Edge object
+				Edge edge = new Edge(edgeShape, canvas.vertexOne, recentVertex);
+				// TODO: prompt for initial edge weight
+				String newEdgeWeight = JOptionPane.showInputDialog(this, "Please input an edge weight.",
+						edge.getWeight());
+
+				if (newEdgeWeight != null) {
+					if (newEdgeWeight.length() > 7) {
+						JOptionPane.showMessageDialog(this, "Your input was too large to be parsed");
+					} else {
+						double newWeightDouble = edge.getWeight();
+						try {
+							newWeightDouble = Double.parseDouble(newEdgeWeight);
+							edge.setWeight(newWeightDouble);
+						} catch (NumberFormatException err) {
+							JOptionPane.showMessageDialog(this, "The number you entered could not be parsed.");
+						}
+					}
+				}
+
+				// Add edge
+				this.edges.push(edge);
+				canvas.vertexOne.addEdge(edge);
+				recentVertex.addEdge(edge);
+
+				canvas.activeLine = false; // Turn off line to cursor
+				canvas.highlightVertices.clear();
+
+				canvas.repaint();
+				this.state = state.handleAction("connectEdge"); // Tell the FNM that we've connected an edge
 			}
 
 		} else if (this.state == State.DELETE) {
 			boolean removedVertex = false;
+			Vertex recentVertex = null;
 			for (Vertex v : this.vertices) {
 				if (v.getVertexShape().contains(e.getPoint())) {
-					this.edges.removeAll(v.getEdges());
-					this.vertices.remove(v);
+					recentVertex = v;
 					removedVertex = true;
-					break;
 				}
+			}
+			if (removedVertex) {
+				this.edges.removeAll(recentVertex.getEdges());
+				this.vertices.remove(recentVertex);
 			}
 
 			if (!removedVertex) {
@@ -577,13 +621,20 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 			// Check if the pointer is currently over a vertex
 			boolean overVert = false;
 			boolean overEdge = false;
+
 			for (Vertex v : this.vertices) {
 				if (v.getVertexShape().contains(e.getPoint())) {
 
-					if (this.state != State.ADD_EDGE_2 && this.canvas.highlightVertices.size() == 1) {
-						canvas.highlightVertices.clear();
+					if ((this.state == State.ADD_EDGE_1 || this.state == State.DELETE)
+							&& this.canvas.highlightVertices.size() == 1) {
+						this.canvas.highlightVertices.removeFirst();
+						this.canvas.highlightVertices.push(v);
+					} else if (this.state == State.ADD_EDGE_2 && this.canvas.highlightVertices.size() > 1) {
+						this.canvas.highlightVertices.removeFirst();
+						this.canvas.highlightVertices.push(v);
+					} else {
+						this.canvas.highlightVertices.push(v);
 					}
-					this.canvas.highlightVertices.push(v);
 
 					overVert = true;
 				}
