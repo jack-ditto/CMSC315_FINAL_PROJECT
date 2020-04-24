@@ -33,7 +33,7 @@ public class KruskalsAlgorithm extends JPanel {
 
     int m = 0;
 
-    public CanvasPanel(SwingShell _parent) {
+    public KruskalsAlgorithm(SwingShell _parent) {
 	super();
 	parent = _parent;
 	vertices = parent.vertices;
@@ -68,7 +68,7 @@ public class KruskalsAlgorithm extends JPanel {
     /**
     * Kruskal's Algorithm
     *
-    * Input: 
+    * Input:
     */
     public Tree Kruskal(LinkedList<Vertex> points, PriorityQueue<Edge> pqEdges, Tree mst) {
 
