@@ -12,7 +12,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 
 		/**
 		 * INITIAL state
-		 * 
+		 *
 		 * The user can click any of the buttons to enter a state. Allows for movement
 		 * into ADD_VERTEX state or ADD_EDGE_1 state. Otherwise, self loop into the same
 		 * state.
@@ -42,7 +42,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 
 		/**
 		 * ADD_VERTEX state
-		 * 
+		 *
 		 * The user can add vertices to the canvas. Alls only for movement into
 		 * ADD_EDGE_1 state. Otherwise self loop
 		 */
@@ -63,7 +63,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 		},
 		/**
 		 * ADD_EDGE_1 state
-		 * 
+		 *
 		 * The user can select a node to attach an edge to. Allows for movement into
 		 * ADD_EDGE_2 state once the verex is selected.
 		 */
@@ -83,7 +83,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 
 		/**
 		 * ADD_EDGE_2 state
-		 * 
+		 *
 		 * The user can select a second vertex to connect the active edge to. Allows for
 		 * return to INITIAL state after selecting.
 		 */

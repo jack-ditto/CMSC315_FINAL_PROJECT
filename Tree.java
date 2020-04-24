@@ -11,7 +11,7 @@ public class Tree {
     private LinkedList<Edge> treeEdges;
 
     /** Constructor*/
-    public Edge(LinkedList<Vertex> vert, LinkedList<Edge> e) {
+    public Tree(LinkedList<Vertex> vert, LinkedList<Edge> e) {
       treeVertices = vert;
       treeEdges = e;
     }
