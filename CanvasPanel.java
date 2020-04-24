@@ -20,7 +20,7 @@ public class CanvasPanel extends JPanel {
 	Color textColor = Color.white;
 	Color mstColor = Color.pink;
 
-	Vertex highlightVertex = null; // Vertex to be highlighted
+	LinkedList<Vertex> highlightVertices = null;
 	Edge highlightEdge = null; // Edge to be highlighted
 	boolean activeLine = false; // Should draw line from vertexOne to pointer
 	boolean deleteState = false;
@@ -32,6 +32,7 @@ public class CanvasPanel extends JPanel {
 		parent = _parent;
 		vertices = parent.vertices;
 		edges = parent.edges;
+		this.highlightVertices = new LinkedList<Vertex>();
 
 	}
 
@@ -106,6 +107,7 @@ public class CanvasPanel extends JPanel {
 
 		}
 
+		g2.setColor(this.highlightColor);
 		if (activeLine) {
 			g2.drawLine((int) vertexOne.getVertexShape().getCenterX(), (int) vertexOne.getVertexShape().getCenterY(),
 					(int) mousePos.getX(), (int) mousePos.getY());
@@ -125,12 +127,12 @@ public class CanvasPanel extends JPanel {
 				g2.fill(currentEdge.getEdgeShape());
 			}
 
-			if (currentVertex == this.highlightVertex && this.deleteState) {
+			if (this.highlightVertices.contains(currentVertex) && this.deleteState) {
 				g2.setColor(this.deleteColor);
 				g2.draw(currentVertex.getVertexShape());
 				g2.fill(currentVertex.getVertexShape());
 				g2.setColor(this.vertexColor);
-			} else if (currentVertex == this.highlightVertex) {
+			} else if (this.highlightVertices.contains(currentVertex)) {
 				g2.setColor(this.highlightColor);
 				g2.draw(currentVertex.getVertexShape());
 				g2.fill(currentVertex.getVertexShape());

@@ -24,17 +24,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 				if (actionIdentifier.equals("addVertex")) {
 					System.out.println("In ADD_VERTEX state");
 					return ADD_VERTEX;
-				} else if (actionIdentifier.equals("addEdge")) {
-					System.out.println("In ADD_EDGE_1 state");
-					return ADD_EDGE_1;
-				} else if (actionIdentifier.equals("delete")) {
-					System.out.println("In DELETE state");
-					return DELETE;
-				} else if (actionIdentifier.equals("changeEdgeWeight")) {
-					System.out.println("In CHANGE_EDGE_WEIGHT state");
-					return CHANGE_EDGE_WEIGHT;
 				}
-
 				return this;
 			}
 
@@ -55,8 +45,13 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 				if (actionIdentifier.equals("addEdge")) {
 					System.out.println("In ADD_EDGE_1 state");
 					return ADD_EDGE_1;
+				} else if (actionIdentifier.equals("delete")) {
+					System.out.println("In DELETE state");
+					return DELETE;
+				} else if (actionIdentifier.equals("changeEdgeWeight")) {
+					System.out.println("In CHANGE_EDGE_WEIGHT state");
+					return CHANGE_EDGE_WEIGHT;
 				}
-
 				return this;
 			}
 
@@ -72,9 +67,18 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 			@Override
 			State handleAction(String actionIdentifier) {
 
-				if (actionIdentifier.equals("mouseClicked")) {
+				if (actionIdentifier.equals("connectEdge")) {
 					System.out.println("In ADD_EDGE_2 state");
 					return ADD_EDGE_2;
+				} else if (actionIdentifier.equals("addVertex")) {
+					System.out.println("In ADD_VERTEX state");
+					return ADD_VERTEX;
+				} else if (actionIdentifier.equals("delete")) {
+					System.out.println("In DELETE state");
+					return DELETE;
+				} else if (actionIdentifier.equals("changeEdgeWeight")) {
+					System.out.println("In CHANGE_EDGE_WEIGHT state");
+					return CHANGE_EDGE_WEIGHT;
 				}
 				return this;
 			}
@@ -87,17 +91,26 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 		 * The user can select a second vertex to connect the active edge to. Allows for
 		 * return to INITIAL state after selecting.
 		 */
-		ADD_EDGE_2 {
+		ADD_EDGE_2
 
+		{
 			@Override
 			State handleAction(String actionIdentifier) {
 				if (actionIdentifier.equals("connectEdge")) {
-					System.out.println("In INITIAL state");
-					return INITIAL;
+					System.out.println("In ADD_EDGE_1 state");
+					return ADD_EDGE_1;
+				} else if (actionIdentifier.equals("addVertex")) {
+					System.out.println("In ADD_VERTEX state");
+					return ADD_VERTEX;
+				} else if (actionIdentifier.equals("delete")) {
+					System.out.println("In DELETE state");
+					return DELETE;
+				} else if (actionIdentifier.equals("changeEdgeWeight")) {
+					System.out.println("In CHANGE_EDGE_WEIGHT state");
+					return CHANGE_EDGE_WEIGHT;
 				}
 				return this;
 			}
-
 		},
 
 		/**
@@ -112,15 +125,26 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 
 			@Override
 			State handleAction(String actionIdentifier) {
-				if (actionIdentifier.equals("mouseClicked")) {
-					System.out.println("In INITIAL state");
-					return INITIAL;
+				if (actionIdentifier.equals("addVertex")) {
+					System.out.println("In ADD_VERTEX state");
+					return ADD_VERTEX;
+				} else if (actionIdentifier.equals("changeEdgeWeight")) {
+					System.out.println("In CHANGE_EDGE_WEIGHT state");
+					return CHANGE_EDGE_WEIGHT;
+				} else if (actionIdentifier.equals("addEdge")) {
+					System.out.println("In ADD_EDGE_1 state");
+					return ADD_EDGE_1;
 				}
-				return INITIAL;
+				return this;
 			}
 
 		},
-		// TODO: change edge weights
+		/**
+		 * CHANGE_EDGE_WEIGHT state
+		 * 
+		 * The user can select a node or edge to delete. Allows for return to INITIAL
+		 * state after click.
+		 */
 		CHANGE_EDGE_WEIGHT {
 
 			@Override
@@ -350,7 +374,9 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 			this.vertices.clear();
 			this.edges.clear();
 			this.canvas.repaint();
+			this.canvas.activeLine = false;
 		} else if (actionIdentifier.equals("runKruskals")) {
+			System.out.println(this.vertices.size());
 			KruskalsAlgorithm k = new KruskalsAlgorithm(this.vertices, this.edges);
 			Tree mst = k.run();
 			this.canvas.mst = mst;
@@ -358,6 +384,15 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 
 		// Allow the state to handle a button press
 		this.state = state.handleAction(actionIdentifier);
+
+		if (this.canvas.activeLine && this.state != State.ADD_EDGE_2) {
+			this.canvas.highlightVertices.clear();
+			this.canvas.activeLine = false;
+
+		} else if (this.canvas.deleteState && this.state != State.DELETE) {
+			this.canvas.deleteState = false;
+		}
+		this.canvas.repaint();
 
 		updateInfoMessage();
 	}
@@ -388,6 +423,7 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 					// Logic for linking vertex to node
 					canvas.vertexOne = v;
 					canvas.activeLine = true;
+					this.state = state.handleAction("connectEdge");
 				}
 			}
 		}
@@ -407,17 +443,19 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 
 					// Create Edge object
 					Edge edge = new Edge(edgeShape, canvas.vertexOne, v);
+					// TODO: prompt for initial edge weight
 					// Add edge
 					this.edges.push(edge);
 					canvas.vertexOne.addEdge(edge);
 					v.addEdge(edge);
 
 					canvas.activeLine = false; // Turn off line to cursor
-					canvas.highlightVertex = null; // Turn off highlighting
+					canvas.highlightVertices.clear();
 					canvas.repaint();
 					this.state = state.handleAction("connectEdge"); // Tell the FNM that we've connected an edge
 				}
 			}
+
 		} else if (this.state == State.DELETE) {
 			boolean removedVertex = false;
 			for (Vertex v : this.vertices) {
@@ -459,9 +497,6 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 							}
 						}
 					}
-
-					// TODO: never trust user input
-					// Also handle case if cancelled
 
 				}
 			}
@@ -544,7 +579,12 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 			boolean overEdge = false;
 			for (Vertex v : this.vertices) {
 				if (v.getVertexShape().contains(e.getPoint())) {
-					canvas.highlightVertex = v;
+
+					if (this.state != State.ADD_EDGE_2 && this.canvas.highlightVertices.size() == 1) {
+						canvas.highlightVertices.clear();
+					}
+					this.canvas.highlightVertices.push(v);
+
 					overVert = true;
 				}
 			}
@@ -558,14 +598,16 @@ public class SwingShell extends JFrame implements ActionListener, MouseListener,
 						overEdge = true;
 					}
 				}
-
 			}
-
 			// Remove highlight if no edge is being hovered over
 			if (!overEdge) {
 				canvas.highlightEdge = null;
-			} else if (!overVert) {
-				canvas.highlightVertex = null;
+			}
+
+			if (!overVert && !this.canvas.activeLine) {
+				canvas.highlightVertices.clear();
+			} else if (this.canvas.highlightVertices.size() > 1 && this.canvas.activeLine && !overVert) {
+				this.canvas.highlightVertices.removeFirst();
 			}
 
 			if (this.state == State.DELETE) {
